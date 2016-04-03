@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     class GetAuctionJSON extends AsyncTask<Void, Void, Void>{
 
         String jsonString = "";
-        String result = "";
+        String result = "a";
 
         @Override
         protected Void doInBackground(Void... params) {
