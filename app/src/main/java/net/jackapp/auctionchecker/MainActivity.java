@@ -1,19 +1,31 @@
 package net.jackapp.auctionchecker;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
     }
 
     @Override
@@ -61,8 +74,10 @@ public class MainActivity extends AppCompatActivity {
     public void onPasteAuctionLink(View view) {
 
         TextView foundAuctionLbl = (TextView) findViewById(R.id.found_auction_lbl);
+        ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
-        String linkToCheck = "http://open.api.ebay.com/shopping?callname=GetSingleItem&responseencoding=XML&appid=Individu-PriceChe-PRD-53a0284bf-5b5a8f9b&siteid=0&version=515&ItemID=111942318507";
+        ClipData.Item clpItem = clipboardManager.getPrimaryClip().getItemAt(0);
+        String linkToCheck = clpItem.getText().toString();
 
         assert foundAuctionLbl != null;
         foundAuctionLbl.setText(linkToCheck);
@@ -74,7 +89,9 @@ public class MainActivity extends AppCompatActivity {
     class GetAuctionJSON extends AsyncTask<Void, Void, Void>{
 
         String jsonString = "";
-        String result = "a";
+        String result = "";
+        String auctionPrice = "";
+        String auctionCurrencyID = "";
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -82,11 +99,28 @@ public class MainActivity extends AppCompatActivity {
             TextView foundAuctionLink = (TextView) findViewById(R.id.found_auction_lbl);
 
             try {
-                URL urlToCheck = new URL("http://open.api.ebay.com/shopping?callname=GetSingleItem&responseencoding=XML&appid=Individu-PriceChe-PRD-53a0284bf-5b5a8f9b&siteid=0&version=515&ItemID=111942318507");
 
-                URLConnection urlConnection = urlToCheck.openConnection();
+                URL urlToCheck = new URL("http://open.api.ebay.com/shopping?callname=GetSingleItem&responseencoding=JSON&appid=Individu-PriceChe-PRD-53a0284bf-5b5a8f9b&siteid=0&version=515&ItemID=111942318507");
+                HttpURLConnection urlConnection = (HttpURLConnection) urlToCheck.openConnection();
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"),8);
+                StringBuilder sb = new StringBuilder();
+
+                String line = null;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+
+                jsonString = sb.toString();
+
+                JSONObject jObject = new JSONObject(jsonString);
+                getAuctionItem(jObject);
 
             } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
 
@@ -97,13 +131,24 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
-            TextView result = (TextView) findViewById(R.id.result);
+            TextView resultTV = (TextView) findViewById(R.id.result);
             TextView foundAuctionLbl = (TextView) findViewById(R.id.found_auction_lbl);
 
+            assert foundAuctionLbl != null;
             foundAuctionLbl.setText("gotowe");
-
-            result.setText(stringToPrint);
-
+            assert resultTV != null;
+            resultTV.setText(result);
         }
+
+        protected void getAuctionItem(JSONObject jsonObject) throws JSONException {
+
+            JSONObject jItem = jsonObject.getJSONObject("Item");
+            JSONObject jPrice = jItem.getJSONObject("ConvertedBuyItNowPrice");
+            auctionPrice = jPrice.get("Value").toString();
+            auctionCurrencyID = jPrice.get("CurrencyID").toString();
+            result = "Cena aukcji: " + auctionPrice + auctionCurrencyID;
+            Log.d("jk", result);
+        }
+
     }
 }
