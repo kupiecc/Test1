@@ -10,6 +10,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,7 +38,7 @@ import java.util.Iterator;
 
 public class MainActivity extends AppCompatActivity {
 
-//    public static ArrayAdapter<String> auctionAdapter;
+    //    public static ArrayAdapter<String> auctionAdapter;
     private final String JSON_DB_NAME = "auctionDB.json";
     FileWorker fileWorker = new FileWorker();
     ArrayList<Auction> auctionList = new ArrayList<>();
@@ -48,13 +50,35 @@ public class MainActivity extends AppCompatActivity {
     TextView urlTv, priceTv, pasteBtn, titleTv, bidTv;
     ListView listAuctionLv;
     Auction foundAuction;
-    final String ITEM = "Item"; final String BID = "ConvertedBuyItNowPrice"; final String PICTURE_URL = "PictureURL"; final String PRICE = "ConvertedCurrentPrice"; final String TITLE = "Title"; final String VALUE = "Value"; final String CURRENCY = "CurrencyID"; final String ITEM_ID = "ItemID"; final String VERSION = "Version"; final String END_TIME = "EndTime"; final String AUCTION_URL = "ViewItemURLForNaturalSearch"; final String LISTING_TYPE = "ListingType"; final String LOCATION = "Location"; final String CATEGORY = "PrimaryCategoryName"; final String CATEGORY_ID = "PrimaryCategoryID"; final String STATUS = "ListingStatus"; final String COUNTRY = "Country"; final String TIMESTAMP = "Timestamp"; final String ACK = "Ack";
-
+    final String ITEM = "Item";
+    final String BID = "ConvertedBuyItNowPrice";
+    final String PICTURE_URL = "PictureURL";
+    final String PRICE = "ConvertedCurrentPrice";
+    final String TITLE = "Title";
+    final String VALUE = "Value";
+    final String CURRENCY = "CurrencyID";
+    final String ITEM_ID = "ItemID";
+    final String VERSION = "Version";
+    final String END_TIME = "EndTime";
+    final String AUCTION_URL = "ViewItemURLForNaturalSearch";
+    final String LISTING_TYPE = "ListingType";
+    final String LOCATION = "Location";
+    final String CATEGORY = "PrimaryCategoryName";
+    final String CATEGORY_ID = "PrimaryCategoryID";
+    final String STATUS = "ListingStatus";
+    final String COUNTRY = "Country";
+    final String TIMESTAMP = "Timestamp";
+    final String ACK = "Ack";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                .permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
 
         urlTv = (TextView) findViewById(R.id.url_auction);
         priceTv = (TextView) findViewById(R.id.price_found);
@@ -73,20 +97,26 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             fileWorker.createJsonFile(this, JSON_DB_NAME);
-            fileWorker.readJsonFile(this, JSON_DB_NAME);
-            auctionDBString = fileWorker.readJsonFile(this, JSON_DB_NAME);
-            Log.d("jkDBString", auctionDBString);
-            if(!auctionDBString.equals("")) {
-                auctionDBArray = new JSONArray(auctionDBString);
-            }else{
-                auctionDBArray = new JSONArray();
-            }
+            readDB();
             loadJsonToLv();
         } catch (JSONException e) {
             Log.e("jk Error", e.toString());
         }
 
 
+    }
+
+    private void readDB() throws JSONException {
+        try {
+            fileWorker.readJsonFile(this, JSON_DB_NAME);
+            auctionDBString = fileWorker.readJsonFile(this, JSON_DB_NAME);
+            if (!auctionDBString.equals(""))
+                auctionDBArray = new JSONArray(auctionDBString);
+            else
+                auctionDBArray = new JSONArray();
+        } catch (JSONException e) {
+            Log.d("function readDB", e.toString());
+        }
     }
 
 
@@ -114,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onPasteAuctionLink(View view) {
 
+        Toast.makeText(this, "abc", Toast.LENGTH_LONG).show();
         urlTv.setTextColor(Color.parseColor("#ffffff"));
         analyzeClipUrl();
 
@@ -147,79 +178,79 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    
+
     private void loadJsonToLv() throws JSONException {
 
-        ArrayList<Auction> auctionsList = new ArrayList<>();
-        Auction auctionFromJson = new Auction();
-        try{
-            for(int i=0; i < auctionDBArray.length(); i++){
-                Log.d("jk", auctionDBArray.getJSONObject(i).getString(TITLE));
-                if(auctionDBArray.getJSONObject(i).has(TITLE)) auctionFromJson.setTitle(auctionDBArray.getJSONObject(i).getString(TITLE));
-                if(auctionDBArray.getJSONObject(i).has(ITEM_ID)) auctionFromJson.setItemId(auctionDBArray.getJSONObject(i).getString(ITEM_ID));
-                if(auctionDBArray.getJSONObject(i).has(END_TIME)) auctionFromJson.setEndTime(auctionDBArray.getJSONObject(i).getString(END_TIME));
-                if(auctionDBArray.getJSONObject(i).has(AUCTION_URL)) auctionFromJson.setUrl(auctionDBArray.getJSONObject(i).getString(AUCTION_URL));
-                if(auctionDBArray.getJSONObject(i).has(LOCATION)) auctionFromJson.setLocation(auctionDBArray.getJSONObject(i).getString(LOCATION));
-                if(auctionDBArray.getJSONObject(i).has(PICTURE_URL)) {
-                    auctionFromJson.setPicture(auctionDBArray.getJSONObject(i).getString(PICTURE_URL));
-                }
-                if(auctionDBArray.getJSONObject(i).has(PRICE)) auctionFromJson.setPrice(auctionDBArray.getJSONObject(i).getString(PRICE));
-                if(auctionDBArray.getJSONObject(i).has(BID)) auctionFromJson.setBid(auctionDBArray.getJSONObject(i).getString(BID));
-                if(auctionDBArray.getJSONObject(i).has(CURRENCY)) auctionFromJson.setCurrency(auctionDBArray.getJSONObject(i).getString(CURRENCY));
-                if(auctionDBArray.getJSONObject(i).has(STATUS)) auctionFromJson.setStatus(auctionDBArray.getJSONObject(i).getString(STATUS));
-                if(auctionDBArray.getJSONObject(i).has(COUNTRY)) auctionFromJson.setCountry(auctionDBArray.getJSONObject(i).getString(COUNTRY));
-                auctionsList.add(auctionFromJson);
-            }
-            AuctionAdapter auctionAdapter = new AuctionAdapter(getApplicationContext(), auctionsList);
-            listAuctionLv.setAdapter(auctionAdapter);
-        }catch (JSONException e){
-            Log.e("jkE", e.toString());
-        }
-
+        ArrayList<Auction> auctionsList = new ArrayList<Auction>();
+        AuctionAdapter auctionAdapter = new AuctionAdapter(getApplicationContext(), auctionsList);
+        ArrayList<Auction> newAuctions = Auction.fromJson(auctionDBArray);
+        auctionAdapter.clear();
+        auctionAdapter.addAll(newAuctions);
+        listAuctionLv.setAdapter(auctionAdapter);
 
     }
-    
+
     public void saveAuction(View view) throws JSONException {
 
         JSONObject itemJson = new JSONObject();
 
-        try{
+        if (Auction.auctionExist(foundAuction.getItemId(), auctionDBArray)) {
+            Toast.makeText(this, "This auction exist.", Toast.LENGTH_LONG).show();
+        } else {
+            try {
 
-            itemJson.put(ITEM_ID, foundAuction.getItemId());
-            itemJson.put(END_TIME, foundAuction.getEndTime());
-            itemJson.put(AUCTION_URL, foundAuction.getUrl());
-            itemJson.put(LOCATION, foundAuction.getLocation());
-            itemJson.put(PICTURE_URL, foundAuction.getPicture());
-            itemJson.put(CATEGORY_ID, foundAuction.getCategoryId());
-            itemJson.put(CATEGORY, foundAuction.getCategory());
-            itemJson.put(PRICE, foundAuction.getPrice());
-            itemJson.put(BID, foundAuction.getBid());
-            itemJson.put(CURRENCY, foundAuction.getCurrency());
-            itemJson.put(STATUS, foundAuction.getStatus());
-            itemJson.put(TITLE, foundAuction.getTitle());
-            itemJson.put(COUNTRY, foundAuction.getCountry());
-            auctionDBArray.put(itemJson);
+                itemJson.put(ITEM_ID, foundAuction.getItemId());
+                itemJson.put(END_TIME, foundAuction.getEndTime());
+                itemJson.put(AUCTION_URL, foundAuction.getUrl());
+                itemJson.put(LOCATION, foundAuction.getLocation());
+                itemJson.put(PICTURE_URL, foundAuction.getPicture());
+                itemJson.put(CATEGORY_ID, foundAuction.getCategoryId());
+                itemJson.put(CATEGORY, foundAuction.getCategory());
+                itemJson.put(PRICE, foundAuction.getPrice());
+                itemJson.put(BID, foundAuction.getBid());
+                itemJson.put(CURRENCY, foundAuction.getCurrency());
+                itemJson.put(STATUS, foundAuction.getStatus());
+                itemJson.put(TITLE, foundAuction.getTitle());
+                itemJson.put(COUNTRY, foundAuction.getCountry());
+                auctionDBArray.put(itemJson);
 
-            Log.d("jk", auctionDBArray.toString());
+                Log.d("jk", auctionDBArray.toString());
 
-            fileWorker.writeJsonFile(this, auctionDBArray.toString(), JSON_DB_NAME);
+                fileWorker.writeJsonFile(this, auctionDBArray.toString(), JSON_DB_NAME);
+                loadJsonToLv();
 
-        } catch (JSONException e) {
-            Log.d("jk", "saveAuction function problem: " + e.toString());
-            e.printStackTrace();
+            } catch (JSONException e) {
+                Log.d("jk", "saveAuction function problem: " + e.toString());
+                e.printStackTrace();
+            }
         }
     }
 
-    public void clearFile(View view) {
+    public void clearFile(View view) throws JSONException {
         fileWorker.writeJsonFile(this, "", JSON_DB_NAME);
+        readDB();
+        loadJsonToLv();
     }
 
     class GetAuctionJSON extends AsyncTask<Void, Void, Void> {
 
-        final String EBAY_SHOPPING_URL = "http://open.api.ebay.com/shopping?"; final String APP_ID = "Individu-PriceChe-PRD-53a0284bf-5b5a8f9b"; final String QUERY_PARAM = "callname"; final String FORMAT_PARAM = "responseencoding"; final String APPID_PARAM = "appid"; final String SITEID_PARAM = "siteid"; final String VERSION_PARAM = "version"; final String ITEMID_PARAM = "itemID";
+        final String EBAY_SHOPPING_URL = "http://open.api.ebay.com/shopping?";
+        final String APP_ID = "Individu-PriceChe-PRD-53a0284bf-5b5a8f9b";
+        final String QUERY_PARAM = "callname";
+        final String FORMAT_PARAM = "responseencoding";
+        final String APPID_PARAM = "appid";
+        final String SITEID_PARAM = "siteid";
+        final String VERSION_PARAM = "version";
+        final String ITEMID_PARAM = "itemID";
 
-        String jsonString = ""; String auctionPrice = ""; String auctionBid = ""; String auctionCurrencyID = "";
-        String dataTypeJson = "JSON"; String siteId = "0"; String query_type = "GetSingleItem"; String version = "515";
+        String jsonString = "";
+        String auctionPrice = "";
+        String auctionBid = "";
+        String auctionCurrencyID = "";
+        String dataTypeJson = "JSON";
+        String siteId = "0";
+        String query_type = "GetSingleItem";
+        String version = "515";
 
 
         @Override
@@ -228,7 +259,8 @@ public class MainActivity extends AppCompatActivity {
             try {
                 Uri builtUri = Uri.parse(EBAY_SHOPPING_URL).buildUpon().appendQueryParameter(QUERY_PARAM, query_type).appendQueryParameter(FORMAT_PARAM, dataTypeJson).appendQueryParameter(APPID_PARAM, APP_ID).appendQueryParameter(SITEID_PARAM, siteId).appendQueryParameter(VERSION_PARAM, version).appendQueryParameter(ITEMID_PARAM, itemId).build();
 
-                URL urlToCheck = new URL(builtUri.toString()); Log.d("jk", builtUri.toString());
+                URL urlToCheck = new URL(builtUri.toString());
+                Log.d("jk", builtUri.toString());
 
                 HttpURLConnection urlConnection = (HttpURLConnection) urlToCheck.openConnection();
                 InputStream in = new BufferedInputStream(urlConnection.getInputStream());
@@ -244,7 +276,13 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject jObject = new JSONObject(jsonString);
                 getAuctionItem(jsonString);
 
-            } catch (MalformedURLException e) { e.printStackTrace(); } catch (IOException e) { e.printStackTrace(); } catch (JSONException e) { e.printStackTrace(); }
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
             return null;
         }
@@ -259,9 +297,6 @@ public class MainActivity extends AppCompatActivity {
             titleTv.setText(fa.getTitle());
             priceTv.setText(fa.getPrice());
             bidTv.setText(fa.getBid());
-            AuctionAdapter auctionAdapter = new AuctionAdapter(getApplicationContext(), auctionList);
-            listAuctionLv.setAdapter(auctionAdapter);
-
         }
 
         protected void getAuctionItem(String jsonString) throws JSONException {
@@ -288,42 +323,56 @@ public class MainActivity extends AppCompatActivity {
                         auctionBid = jPrice.get(VALUE).toString();
                         auctionCurrencyID = jPrice.get(CURRENCY).toString();
                         foundAuction.setBid(auctionBid);
-                        foundAuction.setCurrency(auctionCurrencyID); break;
+                        foundAuction.setCurrency(auctionCurrencyID);
+                        break;
                     case PRICE:
                         jPrice = jItem.getJSONObject(PRICE);
                         auctionPrice = jPrice.get(VALUE).toString();
                         auctionCurrencyID = jPrice.get(CURRENCY).toString();
                         foundAuction.setPrice(auctionPrice);
-                        foundAuction.setCurrency(auctionCurrencyID); break;
+                        foundAuction.setCurrency(auctionCurrencyID);
+                        break;
                     case PICTURE_URL:
                         jPic = jItem.getJSONArray(PICTURE_URL);
                         foundAuction.setPicture(jPic.getString(0));
-                        new GetAuctionPic().execute(foundAuction.getPicture()); break;
+                        new GetAuctionPic().execute(foundAuction.getPicture());
+                        break;
                     case TITLE:
-                        foundAuction.setTitle(jItem.get(TITLE).toString()); break;
+                        foundAuction.setTitle(jItem.get(TITLE).toString());
+                        break;
                     case ITEM_ID:
-                        foundAuction.setItemId(jItem.get(ITEM_ID).toString()); break;
+                        foundAuction.setItemId(jItem.get(ITEM_ID).toString());
+                        break;
                     case END_TIME:
-                        foundAuction.setEndTime(jItem.get(END_TIME).toString()); break;
+                        foundAuction.setEndTime(jItem.get(END_TIME).toString());
+                        break;
                     case AUCTION_URL:
-                        foundAuction.setUrl(jItem.get(AUCTION_URL).toString()); break;
+                        foundAuction.setUrl(jItem.get(AUCTION_URL).toString());
+                        break;
                     case LISTING_TYPE:
-                        foundAuction.setListingType(jItem.get(LISTING_TYPE).toString()); break;
+                        foundAuction.setListingType(jItem.get(LISTING_TYPE).toString());
+                        break;
                     case LOCATION:
-                        foundAuction.setLocation(jItem.get(LOCATION).toString()); break;
+                        foundAuction.setLocation(jItem.get(LOCATION).toString());
+                        break;
                     case CATEGORY:
-                        foundAuction.setCategory(jItem.get(CATEGORY).toString()); break;
+                        foundAuction.setCategory(jItem.get(CATEGORY).toString());
+                        break;
                     case CATEGORY_ID:
-                        foundAuction.setCategoryId(jItem.get(CATEGORY_ID).toString()); break;
+                        foundAuction.setCategoryId(jItem.get(CATEGORY_ID).toString());
+                        break;
                     case STATUS:
-                        foundAuction.setStatus(jItem.get(STATUS).toString()); break;
+                        foundAuction.setStatus(jItem.get(STATUS).toString());
+                        break;
                     case COUNTRY:
-                        foundAuction.setLocation(jItem.get(COUNTRY).toString()); break;
+                        foundAuction.setLocation(jItem.get(COUNTRY).toString());
+                        break;
                 }
             }
             auctionList.add(foundAuction);
         }
     }
+
 
     class GetAuctionPic extends AsyncTask<String, Void, Bitmap> {
 

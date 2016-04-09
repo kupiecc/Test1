@@ -3,6 +3,11 @@ package net.jackapp.auctionchecker;
 import android.content.Context;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.ArrayList;
+
 /**
  * Created by jacekkupczak on 08.04.16.
  */
@@ -25,10 +30,84 @@ public class Auction {
     private String country;
     private String ack;
     private String timestamp;
+    final static String ITEM = "Item";
+    final static String BID = "ConvertedBuyItNowPrice";
+    final static String PICTURE_URL = "PictureURL";
+    final static String PRICE = "ConvertedCurrentPrice";
+    final static String TITLE = "Title";
+    final static String VALUE = "Value";
+    final static String CURRENCY = "CurrencyID";
+    final static String ITEM_ID = "ItemID";
+    final static String VERSION = "Version";
+    final static String END_TIME = "EndTime";
+    final static String AUCTION_URL = "ViewItemURLForNaturalSearch";
+    final static String LISTING_TYPE = "ListingType";
+    final static String LOCATION = "Location";
+    final static String CATEGORY = "PrimaryCategoryName";
+    final static String CATEGORY_ID = "PrimaryCategoryID";
+    final static String STATUS = "ListingStatus";
+    final static String COUNTRY = "Country";
+    final static String TIMESTAMP = "Timestamp";
+    final static String ACK = "Ack";
+
 
     public Auction() {
-        Log.d("jk", "Auction object created");
+
     }
+
+    public static ArrayList<Auction> fromJson(JSONArray auctionDBArray) {
+        ArrayList<Auction> auctions = new ArrayList<Auction>();
+        for (int i = 0; i < auctionDBArray.length(); i++) {
+            try {
+                Auction auctionFromJson = new Auction();
+                if (auctionDBArray.getJSONObject(i).has(TITLE))
+                    auctionFromJson.setTitle(auctionDBArray.getJSONObject(i).getString(TITLE));
+                if (auctionDBArray.getJSONObject(i).has(ITEM_ID))
+                    auctionFromJson.setItemId(auctionDBArray.getJSONObject(i).getString(ITEM_ID));
+                if (auctionDBArray.getJSONObject(i).has(END_TIME))
+                    auctionFromJson.setEndTime(auctionDBArray.getJSONObject(i).getString(END_TIME));
+                if (auctionDBArray.getJSONObject(i).has(AUCTION_URL))
+                    auctionFromJson.setUrl(auctionDBArray.getJSONObject(i).getString(AUCTION_URL));
+                if (auctionDBArray.getJSONObject(i).has(LOCATION))
+                    auctionFromJson.setLocation(auctionDBArray.getJSONObject(i).getString(LOCATION));
+                if (auctionDBArray.getJSONObject(i).has(PICTURE_URL))
+                    auctionFromJson.setPicture(auctionDBArray.getJSONObject(i).getString(PICTURE_URL));
+                if (auctionDBArray.getJSONObject(i).has(PRICE))
+                    auctionFromJson.setPrice(auctionDBArray.getJSONObject(i).getString(PRICE));
+                if (auctionDBArray.getJSONObject(i).has(BID))
+                    auctionFromJson.setBid(auctionDBArray.getJSONObject(i).getString(BID));
+                if (auctionDBArray.getJSONObject(i).has(CURRENCY))
+                    auctionFromJson.setCurrency(auctionDBArray.getJSONObject(i).getString(CURRENCY));
+                if (auctionDBArray.getJSONObject(i).has(STATUS))
+                    auctionFromJson.setStatus(auctionDBArray.getJSONObject(i).getString(STATUS));
+                if (auctionDBArray.getJSONObject(i).has(COUNTRY))
+                    auctionFromJson.setCountry(auctionDBArray.getJSONObject(i).getString(COUNTRY));
+                auctions.add(auctionFromJson);
+            } catch (JSONException e) {
+                Log.e("jkE", e.toString());
+            }
+        }
+        return auctions;
+    }
+
+    public static boolean auctionExist(String id, JSONArray db){
+
+        boolean exist = false;
+
+        for (int i = 0; i < db.length(); i++){
+            try {
+                if(db.getJSONObject(i).getString(ITEM_ID).equals(id))
+                    exist = true;
+            }catch (JSONException e){
+                Log.e("function auctionExist", e.toString());
+            }
+        }
+
+        return exist;
+
+    }
+
+
 
     public String getItemId() {
         return itemId;

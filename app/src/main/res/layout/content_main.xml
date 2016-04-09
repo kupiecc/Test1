@@ -64,7 +64,7 @@
             android:id="@+id/title_found"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Title Title Title Title Title Title Title Title Title TitlTitle Title Title Title Title Title Title e Title Title "
+            android:text="Title"
             android:textColor="#333333"
             android:textSize="18dp"
             android:maxLines="2"
