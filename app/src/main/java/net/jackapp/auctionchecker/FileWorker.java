@@ -5,7 +5,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -37,10 +36,10 @@ public class FileWorker {
 
     }
 
-    public void writeJsonFile(Context context, JSONObject jsonToSave, String jsonFileName) {
+    public void writeJsonFile(Context context, String jsonToSaveString, String jsonFileName) {
 
         File jsonFile = new File(context.getApplicationContext().getFilesDir(), jsonFileName);
-        String jsonToSaveString = jsonToSave.toString();
+//        String jsonToSaveString = jsonToSave;
         FileOutputStream os;
         try{
             if(!jsonFile.exists())
@@ -59,7 +58,7 @@ public class FileWorker {
     public String readJsonFile(Context context, String jsonFileName) throws JSONException {
 
         InputStream in = null;
-        String jsonDBString = "{Json: File Empty}";
+        String jsonDBString = "";
         File jsonFile = new File(context.getApplicationContext().getFilesDir(), jsonFileName);
 
         try{
@@ -70,7 +69,8 @@ public class FileWorker {
             in.read(buffer);
             in.close();
             jsonDBString = new String(buffer, "UTF-8");
-            Log.d("jk my value", jsonDBString);
+//            Log.d("jk", jsonDBString);
+
 
         } catch (IOException e) {
             Log.d("jk", e.getMessage());
