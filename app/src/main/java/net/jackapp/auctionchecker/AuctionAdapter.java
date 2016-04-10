@@ -38,11 +38,11 @@ public class AuctionAdapter extends ArrayAdapter<Auction> {
 
         CaviarTV titleTv = (CaviarTV) convertView.findViewById(R.id.title_row);
         CaviarTV priceTv = (CaviarTV) convertView.findViewById(R.id.price_row);
+        CaviarTV bidTv = (CaviarTV) convertView.findViewById(R.id.bid_row);
         ImageView pictureIv = (ImageView) convertView.findViewById(R.id.picture_row);
 
         try {
             URL picUrl = new URL(auction.getPicture());
-            Log.d("jkurl", picUrl.toString());
             InputStream in = picUrl.openConnection().getInputStream();
             picBmp = BitmapFactory.decodeStream(in);
             pictureIv.setImageBitmap(picBmp);
@@ -52,7 +52,10 @@ public class AuctionAdapter extends ArrayAdapter<Auction> {
         }
 
         titleTv.setText(auction.getTitle());
-        priceTv.setText(auction.getPrice());
+        if(auction.getPrice()  != "-") priceTv.setText(auction.getPrice() + " " + auction.getCurrency()+ "\n(Buy now)");
+        if(auction.getBid() != "-") bidTv.setText(auction.getBid() + " " + auction.getCurrency() + "\n(Bid)");
+
+        notifyDataSetChanged();
 
         return convertView;
     }

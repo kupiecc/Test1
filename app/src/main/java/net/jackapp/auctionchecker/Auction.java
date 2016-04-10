@@ -30,10 +30,11 @@ public class Auction {
     private String country;
     private String ack;
     private String timestamp;
+
     final static String ITEM = "Item";
-    final static String BID = "ConvertedBuyItNowPrice";
+    final static String BID = "ConvertedCurrentPrice";
     final static String PICTURE_URL = "PictureURL";
-    final static String PRICE = "ConvertedCurrentPrice";
+    final static String PRICE = "ConvertedBuyItNowPrice";
     final static String TITLE = "Title";
     final static String VALUE = "Value";
     final static String CURRENCY = "CurrencyID";
@@ -62,24 +63,43 @@ public class Auction {
                 Auction auctionFromJson = new Auction();
                 if (auctionDBArray.getJSONObject(i).has(TITLE))
                     auctionFromJson.setTitle(auctionDBArray.getJSONObject(i).getString(TITLE));
+
                 if (auctionDBArray.getJSONObject(i).has(ITEM_ID))
                     auctionFromJson.setItemId(auctionDBArray.getJSONObject(i).getString(ITEM_ID));
+
                 if (auctionDBArray.getJSONObject(i).has(END_TIME))
                     auctionFromJson.setEndTime(auctionDBArray.getJSONObject(i).getString(END_TIME));
+
                 if (auctionDBArray.getJSONObject(i).has(AUCTION_URL))
                     auctionFromJson.setUrl(auctionDBArray.getJSONObject(i).getString(AUCTION_URL));
+
                 if (auctionDBArray.getJSONObject(i).has(LOCATION))
                     auctionFromJson.setLocation(auctionDBArray.getJSONObject(i).getString(LOCATION));
+
                 if (auctionDBArray.getJSONObject(i).has(PICTURE_URL))
                     auctionFromJson.setPicture(auctionDBArray.getJSONObject(i).getString(PICTURE_URL));
-                if (auctionDBArray.getJSONObject(i).has(PRICE))
+
+
+                if (auctionDBArray.getJSONObject(i).has(PRICE)) {
                     auctionFromJson.setPrice(auctionDBArray.getJSONObject(i).getString(PRICE));
-                if (auctionDBArray.getJSONObject(i).has(BID))
+                } else {
+                    auctionFromJson.setPrice("-");
+                }
+
+
+                if (auctionDBArray.getJSONObject(i).has(BID)) {
                     auctionFromJson.setBid(auctionDBArray.getJSONObject(i).getString(BID));
+                } else {
+                    auctionFromJson.setBid("-");
+                }
+
+
                 if (auctionDBArray.getJSONObject(i).has(CURRENCY))
                     auctionFromJson.setCurrency(auctionDBArray.getJSONObject(i).getString(CURRENCY));
+
                 if (auctionDBArray.getJSONObject(i).has(STATUS))
                     auctionFromJson.setStatus(auctionDBArray.getJSONObject(i).getString(STATUS));
+
                 if (auctionDBArray.getJSONObject(i).has(COUNTRY))
                     auctionFromJson.setCountry(auctionDBArray.getJSONObject(i).getString(COUNTRY));
                 auctions.add(auctionFromJson);
@@ -90,15 +110,15 @@ public class Auction {
         return auctions;
     }
 
-    public static boolean auctionExist(String id, JSONArray db){
+    public static boolean auctionExist(String id, JSONArray db) {
 
         boolean exist = false;
 
-        for (int i = 0; i < db.length(); i++){
+        for (int i = 0; i < db.length(); i++) {
             try {
-                if(db.getJSONObject(i).getString(ITEM_ID).equals(id))
+                if (db.getJSONObject(i).getString(ITEM_ID).equals(id))
                     exist = true;
-            }catch (JSONException e){
+            } catch (JSONException e) {
                 Log.e("function auctionExist", e.toString());
             }
         }
@@ -106,7 +126,6 @@ public class Auction {
         return exist;
 
     }
-
 
 
     public String getItemId() {
@@ -130,9 +149,10 @@ public class Auction {
     }
 
     public void setPrice(String price) {
-        if (price.equals(null)) {
+        if (price == null){
             this.price = "-";
-        }else {
+        }
+        else{
             this.price = price;
         }
     }
@@ -142,9 +162,10 @@ public class Auction {
     }
 
     public void setBid(String bid) {
-        if (bid.equals(null)) {
+        if (bid == null){
             this.bid = "-";
-        }else {
+        }
+        else{
             this.bid = bid;
         }
     }

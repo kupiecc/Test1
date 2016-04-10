@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:background="#2a2a2a"
         android:orientation="horizontal"
-        android:padding="10dp">
+        android:padding="0dp">
 
         <net.jackapp.auctionchecker.CaviarTV
             android:id="@+id/url_auction"
@@ -27,37 +27,45 @@
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:singleLine="true"
-            android:text="Paste auction link"
+            android:hint="Paste auction link."
+            android:textColorHint="#777"
             android:textAlignment="center"
-            android:textColor="#777777"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="0dp"
             android:background="@drawable/rounded_corner"
             android:shadowColor="#000000"
             android:shadowDx="4"
             android:shadowDy="4"
-            android:shadowRadius="5"/>
+            android:shadowRadius="5"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp" />
 
         <net.jackapp.auctionchecker.CaviarTV
             android:id="@+id/paste_btn"
-            android:fontFamily="assets/cd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/url_auction"
             android:text="Paste"
             android:textColor="#4992ff"
             android:layout_alignParentRight="true"
+            android:clickable="true"
             android:onClick="onPasteAuctionLink"
-            />
+            android:paddingLeft="15dp"
+            android:paddingTop="5dp"
+            android:paddingRight="15dp"
+            android:paddingBottom="10dp" />
 
 
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/result_layout"
+        android:id="@+id/found_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/top_layout"
         android:padding="10dp"
+        android:visibility="gone"
+        android:background="#ffffff"
         >
 
         <net.jackapp.auctionchecker.CaviarTV
@@ -74,10 +82,11 @@
         <ImageView
             android:id="@+id/picture_found"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="200dp"
             android:layout_marginBottom="5dp"
             android:layout_marginTop="5dp"
-            android:src="@drawable/a1"
+            android:src="@drawable/no_img"
+            android:background="#ffffff"
             android:layout_below="@id/title_found"
             />
         <LinearLayout
@@ -90,7 +99,7 @@
                 android:id="@+id/bid_found"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Licytuj"
+                android:text="-"
                 android:textAlignment="center"
                 android:layout_weight="1"
                 />
@@ -98,18 +107,20 @@
                 android:id="@+id/save_auction"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Zapisz"
+                android:text="Save"
                 android:textColor="#0088ff"
                 android:onClick="saveAuction"
+                android:clickable="true"
                 android:layout_weight="1"
                 android:textAlignment="center" />
             <net.jackapp.auctionchecker.CaviarTV
                 android:id="@+id/clear_file"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Wyczyść"
+                android:text="Close"
+                android:clickable="true"
                 android:textColor="#0088ff"
-                android:onClick="clearFile"
+                android:onClick="closeFoundItem"
                 android:layout_weight="1"
                 android:textAlignment="center"
                 />
@@ -117,21 +128,18 @@
                 android:id="@+id/price_found"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Kup teraz"
+                android:text="-"
                 android:layout_weight="1"
                 android:textAlignment="center"
                 />
         </LinearLayout>
-
-
-
     </RelativeLayout>
 
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/list_auction"
-        android:layout_below="@+id/result_layout"
+        android:id="@+id/list_auctions"
+        android:layout_below="@+id/found_layout"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 

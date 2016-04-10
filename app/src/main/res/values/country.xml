@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="com">0</string>
+    <string name="ca">2</string>
+    <string name="uk">3</string>
+    <string name="au">15</string>
+    <string name="at">16</string>
+    <string name="be">23</string>
+    <string name="fr">71</string>
+    <string name="de">77</string>
+    <string name="it">101</string>
+    <string name="nl">146</string>
+    <string name="es">186</string>
+    <string name="ch">193</string>
+    <string name="hk">201</string>
+    <string name="in">203</string>
+    <string name="ie">205</string>
+    <string name="my">207</string>
+    <string name="ph">211</string>
+    <string name="pl">212</string>
+    <string name="sg">216</string>
+</resources>
