@@ -20,6 +20,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".AuctionView"
+            android:label="Show details"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

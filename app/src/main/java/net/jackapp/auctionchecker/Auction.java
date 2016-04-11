@@ -1,6 +1,7 @@
 package net.jackapp.auctionchecker;
 
-import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 /**
  * Created by jacekkupczak on 08.04.16.
  */
-public class Auction {
+public class Auction implements Parcelable {
 
     private String itemId;
     private String version;
@@ -56,6 +57,66 @@ public class Auction {
 
     }
 
+    public Auction(Parcel source) {
+        this.itemId = source.readString();
+        this.version = source.readString();
+        this.price = source.readString();
+        this.bid = source.readString();
+        this.currency = source.readString();
+        this.endTime = source.readString();
+        this.url = source.readString();
+        this.listingType = source.readString();
+        this.location = source.readString();
+        this.pictureUrl = source.readString();
+        this.category = source.readString();
+        this.categoryId = source.readString();
+        this.status = source.readString();
+        this.title = source.readString();
+        this.country = source.readString();
+        this.ack = source.readString();
+        this.timestamp = source.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+        dest.writeString(itemId);
+        dest.writeString(version);
+        dest.writeString(price);
+        dest.writeString(bid);
+        dest.writeString(currency);
+        dest.writeString(endTime);
+        dest.writeString(url);
+        dest.writeString(listingType);
+        dest.writeString(location);
+        dest.writeString(pictureUrl);
+        dest.writeString(category);
+        dest.writeString(categoryId);
+        dest.writeString(status);
+        dest.writeString(title);
+        dest.writeString(country);
+        dest.writeString(ack);
+        dest.writeString(timestamp);
+
+    }
+
+    public static final Parcelable.Creator<Auction> CREATOR = new Parcelable.Creator<Auction>(){
+        @Override
+        public Auction createFromParcel(Parcel source) {
+            return new Auction(source);
+        }
+
+        @Override
+        public Auction[] newArray(int size) {
+            return new Auction[0];
+        }
+    };
+
     public static ArrayList<Auction> fromJson(JSONArray auctionDBArray) {
         ArrayList<Auction> auctions = new ArrayList<Auction>();
         for (int i = 0; i < auctionDBArray.length(); i++) {
@@ -77,25 +138,22 @@ public class Auction {
                     auctionFromJson.setLocation(auctionDBArray.getJSONObject(i).getString(LOCATION));
 
                 if (auctionDBArray.getJSONObject(i).has(PICTURE_URL))
-                    auctionFromJson.setPicture(auctionDBArray.getJSONObject(i).getString(PICTURE_URL));
-
+                    auctionFromJson.setPicture(auctionDBArray.getJSONObject(i).getJSONArray(PICTURE_URL).getString(0));
 
                 if (auctionDBArray.getJSONObject(i).has(PRICE)) {
-                    auctionFromJson.setPrice(auctionDBArray.getJSONObject(i).getString(PRICE));
+                    auctionFromJson.setPrice(auctionDBArray.getJSONObject(i).getJSONObject(PRICE).getString("Value"));
+                    auctionFromJson.setCurrency(auctionDBArray.getJSONObject(i).getJSONObject(PRICE).getString("CurrencyID"));
                 } else {
                     auctionFromJson.setPrice("-");
                 }
 
-
                 if (auctionDBArray.getJSONObject(i).has(BID)) {
-                    auctionFromJson.setBid(auctionDBArray.getJSONObject(i).getString(BID));
+                    auctionFromJson.setBid(auctionDBArray.getJSONObject(i).getJSONObject(BID).getString("Value"));
+                    auctionFromJson.setCurrency(auctionDBArray.getJSONObject(i).getJSONObject(BID).getString("CurrencyID"));
+
                 } else {
                     auctionFromJson.setBid("-");
                 }
-
-
-                if (auctionDBArray.getJSONObject(i).has(CURRENCY))
-                    auctionFromJson.setCurrency(auctionDBArray.getJSONObject(i).getString(CURRENCY));
 
                 if (auctionDBArray.getJSONObject(i).has(STATUS))
                     auctionFromJson.setStatus(auctionDBArray.getJSONObject(i).getString(STATUS));
@@ -215,7 +273,8 @@ public class Auction {
     }
 
     public void setPicture(String pictureUrl) {
-        this.pictureUrl = pictureUrl;
+
+        this.pictureUrl = pictureUrl.replace("\\", "");
     }
 
     public String getCategory() {
@@ -272,10 +331,6 @@ public class Auction {
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public Auction(Context context) {
-
     }
 
 

@@ -96,12 +96,12 @@
             >
 
             <net.jackapp.auctionchecker.CaviarTV
-                android:id="@+id/bid_found"
+                android:id="@+id/price_found"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="-"
-                android:textAlignment="center"
                 android:layout_weight="1"
+                android:textAlignment="center"
                 />
             <net.jackapp.auctionchecker.CaviarTV
                 android:id="@+id/save_auction"
@@ -125,12 +125,12 @@
                 android:textAlignment="center"
                 />
             <net.jackapp.auctionchecker.CaviarTV
-                android:id="@+id/price_found"
+                android:id="@+id/bid_found"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="-"
-                android:layout_weight="1"
                 android:textAlignment="center"
+                android:layout_weight="1"
                 />
         </LinearLayout>
     </RelativeLayout>
@@ -141,6 +141,7 @@
         android:id="@+id/list_auctions"
         android:layout_below="@+id/found_layout"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        />
 
 </RelativeLayout>

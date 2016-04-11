@@ -3,6 +3,7 @@ package net.jackapp.auctionchecker;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -36,6 +37,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -75,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
     RelativeLayout foundLayout;
     String itemId, auctionDBString, siteExtension, countriesDBString;
     TextView urlTv, priceTv, pasteBtn, titleTv, bidTv;
+    DecimalFormat df;
 
 
     @Override
@@ -100,9 +103,6 @@ public class MainActivity extends AppCompatActivity {
 
         urlTv.setTextColor(Color.parseColor("#ffffff"));
         analyzeClipUrl();
-        foundLayout = (RelativeLayout) findViewById(R.id.found_layout);
-        assert foundLayout != null;
-        foundLayout.setVisibility(View.VISIBLE);
 
     }
 
@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void loadCountriesCode(){
+    private void loadCountriesCode() {
 
         try {
             countriesDBString = fileWorker.readFile(this, "countriesCode.json", this.getAssets());
@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void clearFoundItem(){
+    private void clearFoundItem() {
         titleTv.setText("");
         picAuctionIv.setImageResource(R.drawable.no_img);
         priceTv.setText("");
@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
         Uri urlToParse = Uri.parse(url);
         String lastPathSegment = urlToParse.getLastPathSegment();
         siteExtension = urlToParse.getAuthority();
-        siteExtension = siteExtension.substring(siteExtension.lastIndexOf(".")+1);
+        siteExtension = siteExtension.substring(siteExtension.lastIndexOf(".") + 1);
 
         return lastPathSegment;
 
@@ -216,11 +216,16 @@ public class MainActivity extends AppCompatActivity {
                 String urlToCheck = clpItem.getText().toString();
                 urlTv.setText(urlToCheck);
                 itemId = getAuctionId(urlToCheck);
+                foundLayout = (RelativeLayout) findViewById(R.id.found_layout);
+                assert foundLayout != null;
+                foundLayout.setVisibility(View.VISIBLE);
+                new GetAuctionJSON().execute();
             }
+        } else {
+            Toast.makeText(this, "Copy Ebay link and paste.", Toast.LENGTH_LONG).show();
         }
 
 
-        new GetAuctionJSON().execute();
     }
 
     private void loadJsonToLv() throws JSONException {
@@ -233,9 +238,19 @@ public class MainActivity extends AppCompatActivity {
         auctionsAdapter.addAll(newAuctions);
         listAuctionsLv.setAdapter(auctionsAdapter);
 
+        listAuctionsLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent showItemIntent = new Intent(getApplicationContext(), AuctionView.class);
+                Auction auctionToView = auctionsAdapter.getItem(position);
+                showItemIntent.putExtra("auction", auctionToView);
+                startActivity(showItemIntent);
+            }
+        });
+
     }
 
-    private void initViewObject(){
+    private void initViewObject() {
         urlTv = (TextView) findViewById(R.id.url_auction);
         priceTv = (TextView) findViewById(R.id.price_found);
         pasteBtn = (TextView) findViewById(R.id.paste_btn);
@@ -244,12 +259,14 @@ public class MainActivity extends AppCompatActivity {
         listAuctionsLv = (ListView) findViewById(R.id.list_auctions);
         picAuctionIv = (ImageView) findViewById(R.id.picture_found);
 
+        df = new DecimalFormat("###,###.00");
+
         registerForContextMenu(listAuctionsLv);
     }
 
-    private JSONArray removeAuction(JSONArray db, String auctionID){
+    private JSONArray removeAuction(JSONArray db, String auctionID) {
         JSONArray newDb = new JSONArray();
-        for(int i=0; i < db.length(); i++){
+        for (int i = 0; i < db.length(); i++) {
             try {
                 if (db.getJSONObject(i).getString(ITEM_ID) != auctionID) {
                     newDb.put(db.getJSONObject(i));
@@ -279,9 +296,8 @@ public class MainActivity extends AppCompatActivity {
         String titleContextItem = auctionsAdapter.getItem(info.position).getTitle();
         String idContextItem = auctionsAdapter.getItem(info.position).getItemId();
         item.setTitle("aaaa");
-        switch (item.getItemId())
-        {
-            case R.id.delete_id :
+        switch (item.getItemId()) {
+            case R.id.delete_id:
 
                 auctionDBArray = removeAuction(auctionDBArray, idContextItem);
                 fileWorker.writeJsonFile(this, auctionDBArray.toString(), JSON_DB_NAME);
@@ -296,6 +312,7 @@ public class MainActivity extends AppCompatActivity {
 //        return super.onContextItemSelected(item);
 
     }
+
     private String siteExt(String ext) throws JSONException {
         String siteId = "0";
         siteId = countriesDBJson.getString(ext);
@@ -388,8 +405,19 @@ public class MainActivity extends AppCompatActivity {
 
         private void setFoundAuctionToView(Auction fa) {
             titleTv.setText(fa.getTitle());
-            if(fa.getPrice() != "-") priceTv.setText(fa.getPrice() + " " + fa.getCurrency() + "\n(Buy now)");
-            if(fa.getBid() != "-") bidTv.setText(fa.getBid() + " " + fa.getCurrency() + "\n(Bid)");
+            if (fa.getPrice() != null && fa.getPrice() != "-") {
+                String priceFormat = df.format(Double.valueOf(fa.getPrice())) + " " + fa.getCurrency() + "\n(Buy now)";
+                priceTv.setText(priceFormat);
+            } else {
+                priceTv.setText("-");
+            }
+
+            if (fa.getBid() != null && fa.getBid() != "-") {
+                String bidFormat = df.format(Double.valueOf(fa.getBid())) + " " + fa.getCurrency() + "\n(Bid)";
+                bidTv.setText(bidFormat);
+            } else {
+                bidTv.setText("-");
+            }
         }
 
         protected void getAuctionItem(String jsonString) throws JSONException {
@@ -408,10 +436,11 @@ public class MainActivity extends AppCompatActivity {
             foundAuction.setAck(jsonObject.get(ACK).toString());
             while (it.hasNext()) {
                 String key = (String) it.next();
-                Log.d("jsonKey ", key + ": " + jItem.getString(key));
+
                 switch (key) {
                     case BID:
                         jPrice = jItem.getJSONObject(BID);
+                        Log.d("jk has bid ", String.valueOf(jItem.has(BID)));
                         auctionBid = jPrice.get(VALUE).toString();
                         auctionCurrencyID = jPrice.get(CURRENCY).toString();
                         foundAuction.setBid(auctionBid);
@@ -419,6 +448,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case PRICE:
                         jPrice = jItem.getJSONObject(PRICE);
+                        Log.d("jk has price ", String.valueOf(jItem.has(BID)));
                         auctionPrice = jPrice.get(VALUE).toString();
                         auctionCurrencyID = jPrice.get(CURRENCY).toString();
                         foundAuction.setPrice(auctionPrice);

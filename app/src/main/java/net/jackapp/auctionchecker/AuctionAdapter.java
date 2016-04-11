@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
@@ -27,10 +28,15 @@ public class AuctionAdapter extends ArrayAdapter<Auction> {
         super(context, 0, auctions);
     }
 
+    public void getTitle(){
+        Log.d("jk", "getTitle()");
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
         Auction auction = getItem(position);
+
 
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.auction_item, parent, false);
@@ -52,8 +58,19 @@ public class AuctionAdapter extends ArrayAdapter<Auction> {
         }
 
         titleTv.setText(auction.getTitle());
-        if(auction.getPrice()  != "-") priceTv.setText(auction.getPrice() + " " + auction.getCurrency()+ "\n(Buy now)");
-        if(auction.getBid() != "-") bidTv.setText(auction.getBid() + " " + auction.getCurrency() + "\n(Bid)");
+
+        DecimalFormat df = new DecimalFormat("###,###.00");
+        if (!auction.getPrice().equals("-")) {
+            String priceFormat = df.format(Double.valueOf(auction.getPrice())) + " " + auction.getCurrency();
+            priceTv.setText(priceFormat);
+        }
+        else priceTv.setText("-");
+
+        if (!auction.getBid().equals("-")) {
+            String bidFormat = df.format(Double.valueOf(auction.getBid())) + " " + auction.getCurrency();
+            bidTv.setText(bidFormat);
+        }
+        else bidTv.setText("");
 
         notifyDataSetChanged();
 
