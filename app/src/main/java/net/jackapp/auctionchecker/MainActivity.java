@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     JSONObject countriesDBJson, jItem;
     ListView listAuctionsLv;
     RelativeLayout foundLayout;
-    String itemId, auctionDBString, siteExtension, countriesDBString;
+    String itemId, auctionDBString, siteExtension, countriesDBString, testString;
     TextView urlTv, priceTv, pasteBtn, titleTv, bidTv;
     DecimalFormat df;
 
@@ -368,6 +368,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 siteId = siteExt(siteExtension);
                 Uri builtUri = Uri.parse(EBAY_SHOPPING_URL).buildUpon().appendQueryParameter(QUERY_PARAM, query_type).appendQueryParameter(FORMAT_PARAM, dataTypeJson).appendQueryParameter(APPID_PARAM, APP_ID).appendQueryParameter(SITEID_PARAM, siteId).appendQueryParameter(VERSION_PARAM, version).appendQueryParameter(ITEMID_PARAM, itemId).build();
+                testString = builtUri.toString();
 
                 URL urlToCheck = new URL(builtUri.toString());
                 Log.d("jk", builtUri.toString());
@@ -405,19 +406,9 @@ public class MainActivity extends AppCompatActivity {
 
         private void setFoundAuctionToView(Auction fa) {
             titleTv.setText(fa.getTitle());
-            if (fa.getPrice() != null && fa.getPrice() != "-") {
-                String priceFormat = df.format(Double.valueOf(fa.getPrice())) + " " + fa.getCurrency() + "\n(Buy now)";
-                priceTv.setText(priceFormat);
-            } else {
-                priceTv.setText("-");
-            }
-
-            if (fa.getBid() != null && fa.getBid() != "-") {
-                String bidFormat = df.format(Double.valueOf(fa.getBid())) + " " + fa.getCurrency() + "\n(Bid)";
-                bidTv.setText(bidFormat);
-            } else {
-                bidTv.setText("-");
-            }
+            priceTv.setText(fa.getCurrencyPrice());
+            bidTv.setText(fa.getCurrencyBid());
+            Log.d("auction address", testString);
         }
 
         protected void getAuctionItem(String jsonString) throws JSONException {

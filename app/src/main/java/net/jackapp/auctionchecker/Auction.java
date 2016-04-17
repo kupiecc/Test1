@@ -7,6 +7,7 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
@@ -19,6 +20,8 @@ public class Auction implements Parcelable {
     private String price;
     private String bid;
     private String currency;
+    private String endDateTime;
+    private String endDate;
     private String endTime;
     private String url;
     private String listingType;
@@ -52,9 +55,11 @@ public class Auction implements Parcelable {
     final static String TIMESTAMP = "Timestamp";
     final static String ACK = "Ack";
 
+    DecimalFormat df;
+
 
     public Auction() {
-
+        df = new DecimalFormat("###,###.00");
     }
 
     public Auction(Parcel source) {
@@ -105,7 +110,7 @@ public class Auction implements Parcelable {
 
     }
 
-    public static final Parcelable.Creator<Auction> CREATOR = new Parcelable.Creator<Auction>(){
+    public static final Parcelable.Creator<Auction> CREATOR = new Parcelable.Creator<Auction>() {
         @Override
         public Auction createFromParcel(Parcel source) {
             return new Auction(source);
@@ -168,6 +173,11 @@ public class Auction implements Parcelable {
         return auctions;
     }
 
+    public DecimalFormat getDf(){
+        df = new DecimalFormat("###,###.00");
+        return df;
+    }
+
     public static boolean auctionExist(String id, JSONArray db) {
 
         boolean exist = false;
@@ -184,7 +194,6 @@ public class Auction implements Parcelable {
         return exist;
 
     }
-
 
     public String getItemId() {
         return itemId;
@@ -203,27 +212,67 @@ public class Auction implements Parcelable {
     }
 
     public String getPrice() {
+        try {
+            if (price != null && price != "-") {
+                return price;
+            }
+        } catch (NumberFormatException e) {
+            Log.e("getPrice NFE", e.toString());
+            return price;
+        }
+        return price;
+    }
+    public String getCurrencyPrice() {
+        try {
+            if (price != null && price != "-") {
+                DecimalFormat df = new DecimalFormat("###,###.00");
+                Double priceVal = Double.valueOf(price);
+                String priceCurr = df.format(priceVal);
+                return priceCurr + " " + getCurrency();
+            }
+        } catch (NumberFormatException e) {
+            Log.e("getPrice", e.toString());
+        }
         return price;
     }
 
     public void setPrice(String price) {
-        if (price == null){
+        if (price == null) {
             this.price = "-";
-        }
-        else{
+        } else {
             this.price = price;
         }
     }
 
     public String getBid() {
+        try {
+            if (bid != null && bid != "-") {
+                return bid;
+            }
+        } catch (NumberFormatException e) {
+            Log.e("getBid NFE", e.toString());
+            return bid;
+        }
+        return bid;
+    }
+    public String getCurrencyBid() {
+        try {
+            if (bid != null && bid != "-") {
+                DecimalFormat df = new DecimalFormat("###,###.00");
+                Double bidVal = Double.valueOf(bid);
+                String bidCurr = df.format(bidVal);
+                return bidCurr + " " + getCurrency();
+            }
+        } catch (NumberFormatException e) {
+            Log.e("getBid", e.toString());
+        }
         return bid;
     }
 
     public void setBid(String bid) {
-        if (bid == null){
+        if (bid == null) {
             this.bid = "-";
-        }
-        else{
+        } else {
             this.bid = bid;
         }
     }
@@ -238,6 +287,15 @@ public class Auction implements Parcelable {
 
     public String getEndTime() {
         return endTime;
+    }
+
+    public String getEndDateTime(){
+        String dateString = "";
+        String fullDate = getEndTime();
+        String dateTime = fullDate.substring(0, fullDate.length() - 5);
+        String[] dateTimeArr = dateTime.split("T");
+        dateString = dateTimeArr[0] + " " + dateTimeArr[1];
+        return dateString;
     }
 
     public void setEndTime(String endTime) {

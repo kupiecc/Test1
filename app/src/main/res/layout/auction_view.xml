@@ -2,114 +2,206 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#1a1a1a"
     android:orientation="vertical">
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="#fff"
         android:padding="10dp">
+
         <net.jackapp.auctionchecker.CaviarTV
             android:id="@+id/title_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Test"
+            android:textColor="#FFFFFF"
             android:textSize="20dp" />
-
-        <ImageView
-            android:id="@+id/picture_view"
-            android:layout_width="match_parent"
-            android:layout_height="170dp"
-            android:src="@drawable/a1" />
     </LinearLayout>
 
-    <LinearLayout
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/picture_view_bg"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight=".5"
-            android:orientation="vertical"
-            android:paddingLeft="10dp">
+            android:layout_height="180dp"
+            android:scaleX="2"
 
-            <net.jackapp.auctionchecker.CaviarTV
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Price now:"
-                android:textSize="12dp" />
+            android:scaleY="2"
+            android:src="@drawable/a1" />
 
-            <net.jackapp.auctionchecker.CaviarTV
-                android:id="@+id/price_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="34 456.99 PLN"
-                android:layout_marginBottom="5dp"
-                android:textColor="#000"
-                android:textSize="16dp" />
-        </LinearLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/black_glass">
+
+        </RelativeLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="20dp"
             android:layout_weight=".5"
+            android:orientation="horizontal"
+            android:paddingLeft="10dp"
             android:paddingRight="10dp">
 
-            <net.jackapp.auctionchecker.CaviarTV
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Bid:"
-                android:textSize="12dp" />
+            <ImageView
+                android:id="@+id/picture_view"
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:layout_gravity="left"
+                android:adjustViewBounds="true"
+                android:background="@drawable/img_border"
+                android:src="@drawable/a1" />
 
-            <net.jackapp.auctionchecker.CaviarTV
-                android:id="@+id/bid_view"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="31 456.99 PLN"
-                android:layout_marginBottom="5dp"
-                android:textColor="#000"
-                android:textSize="16dp" />
+                android:layout_weight=".5"
+                android:orientation="vertical"
+                android:paddingLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:paddingRight="10dp">
+
+                <net.jackapp.auctionchecker.CaviarTV
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Price now:"
+                    android:textColor="#aaa"
+                    android:textSize="12dp" />
+
+                <net.jackapp.auctionchecker.CaviarTV
+                    android:id="@+id/price_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="34 456.99 PLN"
+                    android:textColor="#fff"
+                    android:textSize="18dp" />
+
+                <net.jackapp.auctionchecker.CaviarTV
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Bid:"
+                    android:textColor="#aaa"
+                    android:textSize="12dp" />
+
+                <net.jackapp.auctionchecker.CaviarTV
+                    android:id="@+id/bid_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="31 456.99 PLN"
+                    android:textColor="#fff"
+                    android:textSize="18dp" />
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
+    </FrameLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingLeft="15dp">
-
-        <net.jackapp.auctionchecker.CaviarTV
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Link"
-            android:textSize="12dp" />
+        android:layout_height="match_parent"
+        android:background="@drawable/gradient_bg_app"
+        android:orientation="vertical">
 
         <net.jackapp.auctionchecker.CaviarTV
             android:id="@+id/url_view"
             android:layout_width="wrap_content"
-            android:textColor="#0088ff"
             android:layout_height="wrap_content"
-            android:text="http://www.ebay.com/itm/nate-berkus-owned-pair-of-brass-swing-arm-scones-with-shades/272193640406?hash=item3f600157d6"
+            android:ellipsize="end"
             android:lines="1"
-            android:textSize="15dp"
-            android:ellipsize="end" />
-        <net.jackapp.auctionchecker.CaviarTV
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="End time"
-            android:textSize="12dp" />
-
-        <net.jackapp.auctionchecker.CaviarTV
-            android:id="@+id/end_time_view"
-            android:layout_width="wrap_content"
-            android:textColor="#000"
-            android:layout_height="wrap_content"
-            android:text="2016-04-07 16:09:57"
+            android:padding="10dp"
+            android:text="http://www.ebay.com/itm/nate-berkus-owned-pair-of-brass-swing-arm-scones-with-shades/272193640406?hash=item3f600157d6"
+            android:textColor="#0088ff"
             android:textSize="15dp" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight=".5"
+                android:background="#fff"
+                android:orientation="vertical"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp">
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical"
+            android:paddingLeft="15dp">
+
+
+            <net.jackapp.auctionchecker.CaviarTV
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="End time"
+                android:textColor="#ab8e65"
+                android:textSize="12dp" />
+
+            <net.jackapp.auctionchecker.CaviarTV
+                android:id="@+id/end_time_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2016-04-07 16:09:57"
+                android:textColor="#674d29"
+                android:textSize="15dp" />
+
+            <net.jackapp.auctionchecker.CaviarTV
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Active"
+                android:textColor="#ab8e65"
+                android:textSize="12dp" />
+
+            <net.jackapp.auctionchecker.CaviarTV
+                android:id="@+id/active_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:textColor="#674d29"
+                android:textSize="15dp" />
+
+            <net.jackapp.auctionchecker.CaviarTV
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Country"
+                android:textColor="#ab8e65"
+                android:textSize="12dp" />
+
+            <net.jackapp.auctionchecker.CaviarTV
+                android:id="@+id/country_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:textColor="#674d29"
+                android:textSize="15dp" />
+
+
+        </LinearLayout>
     </LinearLayout>
 
 
