@@ -1,5 +1,6 @@
 package net.jackapp.auctionchecker;
 
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -65,18 +66,21 @@ public class MainActivity extends AppCompatActivity {
     private final String TIMESTAMP = "Timestamp";
     private final String ACK = "Ack";
 
+
     ArrayList<Auction> auctionsList;
     AuctionAdapter auctionsAdapter;
-    Auction foundAuction;
+    Auction foundAuction, auctionChecked;
     Bitmap picBmp;
     FileWorker fileWorker = new FileWorker();
     ImageView picAuctionIv;
-    JSONArray auctionDBArray = new JSONArray();
-    JSONObject countriesDBJson, jItem;
+//    JSONArray auctionDBArray = new JSONArray();
+    JSONArray auctionsJsonArr;
+    JSONObject countriesDBJson, jItem, analyzeJsonItem;
+    JsonWorker jsonWorker;
     ListView listAuctionsLv;
-    RelativeLayout foundLayout;
+    RelativeLayout foundLayout, infoLayout;
     String itemId, auctionDBString, siteExtension, countriesDBString, testString;
-    TextView urlTv, priceTv, pasteBtn, titleTv, bidTv;
+    TextView urlTv, priceTv, pasteButtonTv, titleTv, bidTv, infoTv, updateButtonTv;
     DecimalFormat df;
 
 
@@ -91,17 +95,74 @@ public class MainActivity extends AppCompatActivity {
         initViewObject();
         loadCountriesCode();
 
+
         try {
-            readDB();
+            auctionsJsonArr = jsonWorker.readFileToJsonArray(this, JSON_DB_NAME);
             loadJsonToLv();
         } catch (JSONException e) {
             Log.e("jk Error", e.toString());
         }
     }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.auctions_context_menu, menu);
+        menu.setHeaderTitle("Do: ");
+
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        String titleContextItem = auctionsAdapter.getItem(info.position).getTitle();
+        String idContextItem = auctionsAdapter.getItem(info.position).getItemId();
+        switch (item.getItemId()) {
+            case R.id.delete_id:
+
+                auctionsJsonArr = removeAuction(auctionsJsonArr, idContextItem);
+                fileWorker.writeJsonFile(this, auctionsJsonArr.toString(), JSON_DB_NAME);
+                auctionsList.remove(info.position);
+                auctionsAdapter.notifyDataSetChanged();
+                Toast.makeText(this, titleContextItem + " removed.", Toast.LENGTH_LONG).show();
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+
+        }
+//        return super.onContextItemSelected(item);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
     public void onPasteAuctionLink(View view) {
 
         urlTv.setTextColor(Color.parseColor("#ffffff"));
+        view.setClickable(false);
         analyzeClipUrl();
 
     }
@@ -110,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
 
         JSONObject itemJson = new JSONObject();
 
-        if (Auction.auctionExist(foundAuction.getItemId(), auctionDBArray)) {
+        if (Auction.auctionExist(foundAuction.getItemId(), auctionsJsonArr)) {
             Toast.makeText(this, "This auction exist.", Toast.LENGTH_LONG).show();
         } else {
 
@@ -121,31 +182,18 @@ public class MainActivity extends AppCompatActivity {
 
                     String key = (String) it.next();
                     itemJson.put(key, jItem.get(key));
+//                    Log.d(key, jItem.get(key).toString());
+
 
                 }
-                auctionDBArray.put(itemJson);
+                itemJson.put("SiteExtension", foundAuction.getSiteExt());
+                itemJson.put("SiteID", foundAuction.getSiteId());
+                itemJson.put("UrlJson", foundAuction.getUrlJson());
+                auctionsJsonArr.put(itemJson);
 
-//                itemJson.put(ITEM_ID, foundAuction.getItemId());
-//                itemJson.put(END_TIME, foundAuction.getEndTime());
-//                itemJson.put(AUCTION_URL, foundAuction.getUrl());
-//                itemJson.put(LOCATION, foundAuction.getLocation());
-//                itemJson.put(PICTURE_URL, foundAuction.getPicture());
-//                itemJson.put(CATEGORY_ID, foundAuction.getCategoryId());
-//                itemJson.put(CATEGORY, foundAuction.getCategory());
-//                itemJson.put(PRICE, foundAuction.getPrice());
-//                itemJson.put(BID, foundAuction.getBid());
-//                itemJson.put(CURRENCY, foundAuction.getCurrency());
-//                itemJson.put(STATUS, foundAuction.getStatus());
-//                itemJson.put(TITLE, foundAuction.getTitle());
-//                itemJson.put(COUNTRY, foundAuction.getCountry());
-//
-//
-//
-//                auctionDBArray.put(itemJson);
+                Log.d("jk saveItem", auctionsJsonArr.toString());
 
-                Log.d("jk saveItem", auctionDBArray.toString());
-
-                fileWorker.writeJsonFile(this, auctionDBArray.toString(), JSON_DB_NAME);
+                fileWorker.writeJsonFile(this, auctionsJsonArr.toString(), JSON_DB_NAME);
                 loadJsonToLv();
                 clearFoundItem();
 
@@ -160,6 +208,12 @@ public class MainActivity extends AppCompatActivity {
 
         clearFoundItem();
 
+    }
+
+    private String siteExt(String ext) throws JSONException {
+        String siteId = "0";
+        siteId = countriesDBJson.getString(ext);
+        return siteId;
     }
 
     private void loadCountriesCode() {
@@ -182,19 +236,19 @@ public class MainActivity extends AppCompatActivity {
         foundLayout.setVisibility(View.GONE);
     }
 
-    private void readDB() throws JSONException {
-        try {
-            auctionDBString = fileWorker.readFile(this, JSON_DB_NAME);
-            if (!auctionDBString.equals(""))
-                auctionDBArray = new JSONArray(auctionDBString);
-            else
-                auctionDBArray = new JSONArray();
-        } catch (JSONException e) {
-            Log.d("function readDB", e.toString());
-        }
-        Log.d("readDB", auctionDBString);
-
-    }
+//    private void readDB() throws JSONException {
+//        try {
+//            auctionDBString = fileWorker.readFile(this, JSON_DB_NAME);
+//            if (!auctionDBString.equals(""))
+//                auctionDBArray = new JSONArray(auctionDBString);
+//            else
+//                auctionDBArray = new JSONArray();
+//        } catch (JSONException e) {
+//            Log.d("function readDB", e.toString());
+//        }
+//        Log.d("readDB", auctionDBString);
+//
+//    }
 
     private String getAuctionId(String url) {
 
@@ -202,6 +256,9 @@ public class MainActivity extends AppCompatActivity {
         String lastPathSegment = urlToParse.getLastPathSegment();
         siteExtension = urlToParse.getAuthority();
         siteExtension = siteExtension.substring(siteExtension.lastIndexOf(".") + 1);
+
+        Log.d("siteExtension", siteExtension);
+        Log.d("lastPathSegment", lastPathSegment);
 
         return lastPathSegment;
 
@@ -233,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
         auctionsList = new ArrayList<Auction>();
         auctionsList.clear();
         auctionsAdapter = new AuctionAdapter(getApplicationContext(), auctionsList);
-        ArrayList<Auction> newAuctions = Auction.fromJson(auctionDBArray);
+        ArrayList<Auction> newAuctions = Auction.fromJson(auctionsJsonArr);
         auctionsAdapter.clear();
         auctionsAdapter.addAll(newAuctions);
         listAuctionsLv.setAdapter(auctionsAdapter);
@@ -253,11 +310,13 @@ public class MainActivity extends AppCompatActivity {
     private void initViewObject() {
         urlTv = (TextView) findViewById(R.id.url_auction);
         priceTv = (TextView) findViewById(R.id.price_found);
-        pasteBtn = (TextView) findViewById(R.id.paste_btn);
+        pasteButtonTv = (TextView) findViewById(R.id.paste_button_tv);
         titleTv = (TextView) findViewById(R.id.title_found);
         bidTv = (TextView) findViewById(R.id.bid_found);
         listAuctionsLv = (ListView) findViewById(R.id.list_auctions);
         picAuctionIv = (ImageView) findViewById(R.id.picture_found);
+        infoLayout = (RelativeLayout) findViewById(R.id.info);
+        updateButtonTv = (TextView) findViewById(R.id.update_button_tv);
 
         df = new DecimalFormat("###,###.00");
 
@@ -279,66 +338,136 @@ public class MainActivity extends AppCompatActivity {
         return newDb;
     }
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
 
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.auctions_context_menu, menu);
-        menu.setHeaderTitle("Do: ");
+    public void onUpdateAuctions(View view) {
 
-    }
+        Log.d("update", "click");
 
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
+        view.setClickable(false);
+        final Dialog dialog = new Dialog(this);
 
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        String titleContextItem = auctionsAdapter.getItem(info.position).getTitle();
-        String idContextItem = auctionsAdapter.getItem(info.position).getItemId();
-        item.setTitle("aaaa");
-        switch (item.getItemId()) {
-            case R.id.delete_id:
+        dialog.setContentView(R.layout.info);
+        dialog.setTitle("Checking...");
+        infoTv = (TextView) dialog.findViewById(R.id.info_tv);
 
-                auctionDBArray = removeAuction(auctionDBArray, idContextItem);
-                fileWorker.writeJsonFile(this, auctionDBArray.toString(), JSON_DB_NAME);
-                auctionsList.remove(info.position);
-                auctionsAdapter.notifyDataSetChanged();
-                Toast.makeText(this, titleContextItem + " removed.", Toast.LENGTH_LONG).show();
-                return true;
-            default:
-                return super.onContextItemSelected(item);
+        String auctionList = "";
+        String itemID = "";
+        int lp = 0;
+        for (int i = 0; i < auctionsJsonArr.length(); i++) {
+            lp = lp + 1;
+            try {
 
+                itemID = auctionsJsonArr.getJSONObject(i).getString(ITEM_ID);
+                String title = auctionsJsonArr.getJSONObject(i).getString(TITLE);
+                String url = auctionsJsonArr.getJSONObject(i).getString(TITLE);
+                new AnalyzeAuctions().execute(i);
+            } catch (JSONException e) {
+                Log.e("update err", e.toString());
+            }
         }
-//        return super.onContextItemSelected(item);
-
+        Log.d("update actions", itemID);
+        dialog.show();
     }
 
-    private String siteExt(String ext) throws JSONException {
-        String siteId = "0";
-        siteId = countriesDBJson.getString(ext);
-        return siteId;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    class AnalyzeAuctions extends AsyncTask<Integer, Void, Void> {
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        final String EBAY_SHOPPING_URL = "http://open.api.ebay.com/shopping?";
+        final String APP_ID = "Individu-PriceChe-PRD-53a0284bf-5b5a8f9b";
+        final String QUERY_PARAM = "callname";
+        final String FORMAT_PARAM = "responseencoding";
+        final String APPID_PARAM = "appid";
+        final String SITEID_PARAM = "siteid";
+        final String VERSION_PARAM = "version";
+        final String ITEMID_PARAM = "itemID";
+        final String URL_JSON = "UrlJson";
+
+        String jsonString = "";
+
+
+        @Override
+        protected Void doInBackground(Integer... params) {
+
+            try {
+                Integer auctionNum = params[0];
+
+                URL urlToCheck = new URL(auctionsJsonArr.getJSONObject(auctionNum).get(URL_JSON).toString());
+
+                HttpURLConnection urlConnection = (HttpURLConnection) urlToCheck.openConnection();
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"), 8);
+                StringBuilder sb = new StringBuilder();
+
+                String line = null;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                String analyzeJsonString;
+                analyzeJsonString = sb.toString();
+
+                getAuctionItem(analyzeJsonString);
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return null;
         }
 
-        return super.onOptionsItemSelected(item);
-    }
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+            String infoMsg;
+            if(auctionChecked.getPrice() != null){
+                infoMsg = infoTv.getText() + "\n\n" + auctionChecked.getTitle() + "\nBid: " + auctionChecked.getBid() + "\nNow: " + auctionChecked.getPrice();
+            }else {
+                infoMsg = infoTv.getText() + "\n\n" + auctionChecked.getTitle() + "\nPrice: " + auctionChecked.getBid();
+            }
+            infoTv.setText(infoMsg);
+            updateButtonTv.setClickable(true);
+            Log.d("auctionChecked tit", auctionChecked.getTitle());
+            Log.d("auctionChecked bid", auctionChecked.getBid());
+//            Log.d("auctionChecked pri", auctionChecked.getPrice());
+        }
+
+        private void setFoundAuctionToView(Auction fa) {
+            Log.d("auction address", testString);
+        }
+
+        protected void getAuctionItem(String jsonString) throws JSONException {
+
+            auctionChecked = new Auction();
+
+            JSONObject jsonObject = new JSONObject(jsonString);
+
+            analyzeJsonItem = jsonObject.getJSONObject(ITEM);
+            Iterator it = analyzeJsonItem.keys();
+
+            while (it.hasNext()) {
+                String key = (String) it.next();
+                switch (key) {
+                    case BID:
+                        auctionChecked.setBid(analyzeJsonItem.getJSONObject(BID).get(VALUE).toString());
+                        auctionChecked.setCurrency(analyzeJsonItem.getJSONObject(BID).get(CURRENCY).toString());
+                        break;
+                    case PRICE:
+                        auctionChecked.setPrice(analyzeJsonItem.getJSONObject(PRICE).get(VALUE).toString());
+                        auctionChecked.setCurrency(analyzeJsonItem.getJSONObject(PRICE).get(CURRENCY).toString());
+                        break;
+                    case TITLE:
+                        auctionChecked.setTitle(analyzeJsonItem.get(TITLE).toString());
+                        break;
+                    case ITEM_ID:
+                        auctionChecked.setItemId(analyzeJsonItem.get(ITEM_ID).toString());
+                        break;
+                }
+            }
+        }
     }
 
     class GetAuctionJSON extends AsyncTask<Void, Void, Void> {
@@ -353,9 +482,6 @@ public class MainActivity extends AppCompatActivity {
         final String ITEMID_PARAM = "itemID";
 
         String jsonString = "";
-        String auctionPrice = "";
-        String auctionBid = "";
-        String auctionCurrencyID = "";
         String dataTypeJson = "JSON";
         String siteId = "com";
         String query_type = "GetSingleItem";
@@ -366,9 +492,17 @@ public class MainActivity extends AppCompatActivity {
         protected Void doInBackground(Void... params) {
 
             try {
+                foundAuction = new Auction();
+
                 siteId = siteExt(siteExtension);
+
+                foundAuction.setSiteExt(siteExtension);
+                foundAuction.setSiteId(siteId);
+
                 Uri builtUri = Uri.parse(EBAY_SHOPPING_URL).buildUpon().appendQueryParameter(QUERY_PARAM, query_type).appendQueryParameter(FORMAT_PARAM, dataTypeJson).appendQueryParameter(APPID_PARAM, APP_ID).appendQueryParameter(SITEID_PARAM, siteId).appendQueryParameter(VERSION_PARAM, version).appendQueryParameter(ITEMID_PARAM, itemId).build();
-                testString = builtUri.toString();
+//                testString = builtUri.toString();
+
+                foundAuction.setUrlJson(builtUri.toString());
 
                 URL urlToCheck = new URL(builtUri.toString());
                 Log.d("jk", builtUri.toString());
@@ -384,7 +518,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 jsonString = sb.toString();
 
-                JSONObject jObject = new JSONObject(jsonString);
+//                JSONObject jObject = new JSONObject(jsonString);
                 getAuctionItem(jsonString);
 
             } catch (MalformedURLException e) {
@@ -408,19 +542,19 @@ public class MainActivity extends AppCompatActivity {
             titleTv.setText(fa.getTitle());
             priceTv.setText(fa.getCurrencyPrice());
             bidTv.setText(fa.getCurrencyBid());
-            Log.d("auction address", testString);
+            pasteButtonTv.setClickable(true);
         }
 
         protected void getAuctionItem(String jsonString) throws JSONException {
 
-            foundAuction = new Auction();
 
             JSONObject jsonObject = new JSONObject(jsonString);
 
+
             jItem = jsonObject.getJSONObject(ITEM);
             Iterator it = jItem.keys();
-            JSONObject jPrice;
-            JSONArray jPic;
+
+
 
             foundAuction.setVersion(jsonObject.get(VERSION).toString());
             foundAuction.setTimestamp(jsonObject.get(TIMESTAMP).toString());
@@ -430,24 +564,15 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (key) {
                     case BID:
-                        jPrice = jItem.getJSONObject(BID);
-                        Log.d("jk has bid ", String.valueOf(jItem.has(BID)));
-                        auctionBid = jPrice.get(VALUE).toString();
-                        auctionCurrencyID = jPrice.get(CURRENCY).toString();
-                        foundAuction.setBid(auctionBid);
-                        foundAuction.setCurrency(auctionCurrencyID);
+                        foundAuction.setBid(jItem.getJSONObject(BID).get(VALUE).toString());
+                        foundAuction.setCurrency(jItem.getJSONObject(BID).get(CURRENCY).toString());
                         break;
                     case PRICE:
-                        jPrice = jItem.getJSONObject(PRICE);
-                        Log.d("jk has price ", String.valueOf(jItem.has(BID)));
-                        auctionPrice = jPrice.get(VALUE).toString();
-                        auctionCurrencyID = jPrice.get(CURRENCY).toString();
-                        foundAuction.setPrice(auctionPrice);
-                        foundAuction.setCurrency(auctionCurrencyID);
+                        foundAuction.setPrice(jItem.getJSONObject(BID).get(VALUE).toString());
+                        foundAuction.setCurrency(jItem.getJSONObject(BID).get(CURRENCY).toString());
                         break;
                     case PICTURE_URL:
-                        jPic = jItem.getJSONArray(PICTURE_URL);
-                        foundAuction.setPicture(jPic.getString(0));
+                        foundAuction.setPicture(jItem.getJSONArray(PICTURE_URL).getString(0));
                         new GetAuctionPic().execute(foundAuction.getPicture());
                         break;
                     case TITLE:

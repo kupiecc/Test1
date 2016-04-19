@@ -9,6 +9,7 @@
     tools:showIn="@layout/activity_main">
 
 
+
     <RelativeLayout
         android:id="@+id/top_layout"
         android:layout_width="fill_parent"
@@ -41,7 +42,7 @@
             android:layout_marginRight="10dp" />
 
         <net.jackapp.auctionchecker.CaviarTV
-            android:id="@+id/paste_btn"
+            android:id="@+id/paste_button_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/url_auction"
@@ -50,6 +51,19 @@
             android:layout_alignParentRight="true"
             android:clickable="true"
             android:onClick="onPasteAuctionLink"
+            android:paddingLeft="15dp"
+            android:paddingTop="5dp"
+            android:paddingRight="15dp" />
+        <net.jackapp.auctionchecker.CaviarTV
+            android:id="@+id/update_button_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/url_auction"
+            android:text="Update"
+            android:textColor="#4992ff"
+            android:layout_alignParentLeft="true"
+            android:clickable="true"
+            android:onClick="onUpdateAuctions"
             android:paddingLeft="15dp"
             android:paddingTop="5dp"
             android:paddingRight="15dp"
@@ -143,5 +157,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         />
+
+
 
 </RelativeLayout>

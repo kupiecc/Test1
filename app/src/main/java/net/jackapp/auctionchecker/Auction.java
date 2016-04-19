@@ -34,6 +34,9 @@ public class Auction implements Parcelable {
     private String country;
     private String ack;
     private String timestamp;
+    private String siteId;
+    private String siteExt;
+    private String urlJson;
 
     final static String ITEM = "Item";
     final static String BID = "ConvertedCurrentPrice";
@@ -391,5 +394,28 @@ public class Auction implements Parcelable {
         this.timestamp = timestamp;
     }
 
+    public String getSiteId() {
+        return siteId;
+    }
+
+    public void setSiteId(String siteId) {
+        this.siteId = siteId;
+    }
+
+    public String getSiteExt() {
+        return siteExt;
+    }
+
+    public void setSiteExt(String siteExt) {
+        this.siteExt = siteExt;
+    }
+
+    public String getUrlJson() {
+        return urlJson;
+    }
+
+    public void setUrlJson(String urlJson) {
+        this.urlJson = urlJson;
+    }
 
 }

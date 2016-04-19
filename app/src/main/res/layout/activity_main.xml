@@ -8,43 +8,6 @@
     tools:context="net.jackapp.auctionchecker.MainActivity">
 
 
-    <!--<android.support.design.widget.AppBarLayout-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:theme="@style/AppTheme.AppBarOverlay">-->
-
-    <!--&lt;!&ndash;<android.support.v7.widget.Toolbar&ndash;&gt;-->
-    <!--&lt;!&ndash;android:id="@+id/toolbar"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:layout_height="?attr/actionBarSize"&ndash;&gt;-->
-    <!--&lt;!&ndash;android:background="?attr/colorPrimary"&ndash;&gt;-->
-    <!--&lt;!&ndash;app:popupTheme="@style/AppTheme.PopupOverlay" />&ndash;&gt;-->
-
-    <!--</android.support.design.widget.AppBarLayout>-->
-
-    <!--<ImageButton-->
-        <!--android:layout_width="50dp"-->
-        <!--android:layout_height="50dp"-->
-        <!--android:id="@+id/pasteBtn"-->
-        <!--android:layout_gravity="top|start"-->
-        <!--android:layout_margin="@dimen/fab_margin"-->
-        <!--android:onClick="onPasteAuctionLink"-->
-        <!--android:src="@drawable/pasteIcon"-->
-        <!--app:backgroundTint="#2155bc"-->
-        <!--/>-->
-
-
-    <!--<android.support.design.widget.FloatingActionButton-->
-        <!--android:id="@+id/fab"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="top|start"-->
-        <!--android:layout_margin="@dimen/fab_margin"-->
-        <!--android:onClick="onPasteAuctionLink"-->
-
-        <!--android:src="@android:drawable/ic_menu_edit"-->
-        <!--app:backgroundTint="#2155bc"-->
-        <!--android:maxWidth="20dp" />-->
 
 
     <include layout="@layout/content_main" />
