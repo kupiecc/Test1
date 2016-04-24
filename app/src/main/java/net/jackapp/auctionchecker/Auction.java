@@ -17,6 +17,12 @@ public class Auction implements Parcelable {
 
     private String itemId;
     private String version;
+    private JSONArray history;
+    private String historyString;
+    private String historyPrice;
+    private String historyBid;
+    private String historyBuyItNow;
+    private String historyDate;
     private String price;
     private String bid;
     private String currency;
@@ -57,12 +63,21 @@ public class Auction implements Parcelable {
     final static String COUNTRY = "Country";
     final static String TIMESTAMP = "Timestamp";
     final static String ACK = "Ack";
+    final static String HISTORY = "History";
+    final static String HISTORYPRICE = "Price";
+    final static String HISTORYBID = "Bid";
+    final static String HISTORYBUYITNOW = "BuyItNow";
+    final static String HISTORYDATE = "Date";
 
-    DecimalFormat df;
+    DecimalFormat currencyFormat;
+    DecimalFormat decimalFormat;
 
 
     public Auction() {
-        df = new DecimalFormat("###,###.00");
+        currencyFormat = new DecimalFormat("###,###.00");
+        currencyFormat.setMaximumFractionDigits(2);
+        decimalFormat = new DecimalFormat("###.00");
+        decimalFormat.setMaximumFractionDigits(2);
     }
 
     public Auction(Parcel source) {
@@ -125,7 +140,7 @@ public class Auction implements Parcelable {
         }
     };
 
-    public static ArrayList<Auction> fromJson(JSONArray auctionDBArray) {
+    public static ArrayList<Auction> loadFromJsonArray(JSONArray auctionDBArray) {
         ArrayList<Auction> auctions = new ArrayList<Auction>();
         for (int i = 0; i < auctionDBArray.length(); i++) {
             try {
@@ -145,8 +160,22 @@ public class Auction implements Parcelable {
                 if (auctionDBArray.getJSONObject(i).has(LOCATION))
                     auctionFromJson.setLocation(auctionDBArray.getJSONObject(i).getString(LOCATION));
 
-                if (auctionDBArray.getJSONObject(i).has(PICTURE_URL))
-                    auctionFromJson.setPicture(auctionDBArray.getJSONObject(i).getJSONArray(PICTURE_URL).getString(0));
+                if (auctionDBArray.getJSONObject(i).has(PICTURE_URL)) {
+//                    System.out.println("auctionDBArray = " + auctionDBArray.getJSONObject(i).get(PICTURE_URL));
+                    if (auctionDBArray.getJSONObject(i).getJSONArray(PICTURE_URL).length() > 0) {
+                        auctionFromJson.setPicture(auctionDBArray.getJSONObject(i).getJSONArray(PICTURE_URL).getString(0));
+                    } else {
+                        auctionFromJson.setPicture("");
+                    }
+                }
+
+
+                if (auctionDBArray.getJSONObject(i).has(HISTORY)) {
+                    JSONArray historyObjArr = auctionDBArray.getJSONObject(i).getJSONArray(HISTORY);
+                    auctionFromJson.setHistory(historyObjArr);
+                    auctionFromJson.setHistoryString(historyObjArr);
+                }
+
 
                 if (auctionDBArray.getJSONObject(i).has(PRICE)) {
                     auctionFromJson.setPrice(auctionDBArray.getJSONObject(i).getJSONObject(PRICE).getString("Value"));
@@ -170,15 +199,10 @@ public class Auction implements Parcelable {
                     auctionFromJson.setCountry(auctionDBArray.getJSONObject(i).getString(COUNTRY));
                 auctions.add(auctionFromJson);
             } catch (JSONException e) {
-                Log.e("jkE", e.toString());
+                Log.e("Auction fromJson()", e.toString());
             }
         }
         return auctions;
-    }
-
-    public DecimalFormat getDf(){
-        df = new DecimalFormat("###,###.00");
-        return df;
     }
 
     public static boolean auctionExist(String id, JSONArray db) {
@@ -214,10 +238,32 @@ public class Auction implements Parcelable {
         this.version = version;
     }
 
+    public JSONArray getHistory() {
+        return history;
+    }
+
+    public void setHistory(JSONArray history) {
+        this.history = history;
+    }
+
+
+    public String getHistoryString() {
+        return historyString;
+    }
+
+    public void setHistoryString(JSONArray history) {
+        this.historyString = history.toString();
+    }
+
+
     public String getPrice() {
         try {
             if (price != null && price != "-") {
-                return price;
+                Float priceF = Float.parseFloat(price);
+                decimalFormat = new DecimalFormat("###.00");
+                decimalFormat.setMaximumFractionDigits(2);
+                String newPrice = decimalFormat.format(priceF);
+                return newPrice;
             }
         } catch (NumberFormatException e) {
             Log.e("getPrice NFE", e.toString());
@@ -225,12 +271,14 @@ public class Auction implements Parcelable {
         }
         return price;
     }
+
     public String getCurrencyPrice() {
         try {
             if (price != null && price != "-") {
-                DecimalFormat df = new DecimalFormat("###,###.00");
-                Double priceVal = Double.valueOf(price);
-                String priceCurr = df.format(priceVal);
+                Float priceF = Float.valueOf(price);
+                currencyFormat = new DecimalFormat("###,###.00");
+                currencyFormat.setMaximumFractionDigits(2);
+                String priceCurr = currencyFormat.format(priceF);
                 return priceCurr + " " + getCurrency();
             }
         } catch (NumberFormatException e) {
@@ -250,7 +298,11 @@ public class Auction implements Parcelable {
     public String getBid() {
         try {
             if (bid != null && bid != "-") {
-                return bid;
+                Float bidF = Float.parseFloat(bid);
+                decimalFormat = new DecimalFormat("###.00");
+                decimalFormat.setMaximumFractionDigits(2);
+                String newBid = decimalFormat.format(bidF);
+                return newBid;
             }
         } catch (NumberFormatException e) {
             Log.e("getBid NFE", e.toString());
@@ -258,12 +310,14 @@ public class Auction implements Parcelable {
         }
         return bid;
     }
+
     public String getCurrencyBid() {
         try {
             if (bid != null && bid != "-") {
-                DecimalFormat df = new DecimalFormat("###,###.00");
-                Double bidVal = Double.valueOf(bid);
-                String bidCurr = df.format(bidVal);
+                Float bidF = Float.valueOf(bid);
+                currencyFormat = new DecimalFormat("###,###.00");
+                currencyFormat.setMaximumFractionDigits(2);
+                String bidCurr = currencyFormat.format(bidF);
                 return bidCurr + " " + getCurrency();
             }
         } catch (NumberFormatException e) {
@@ -292,12 +346,17 @@ public class Auction implements Parcelable {
         return endTime;
     }
 
-    public String getEndDateTime(){
+    public String getEndDateTime() {
         String dateString = "";
-        String fullDate = getEndTime();
-        String dateTime = fullDate.substring(0, fullDate.length() - 5);
-        String[] dateTimeArr = dateTime.split("T");
-        dateString = dateTimeArr[0] + " " + dateTimeArr[1];
+        if(getEndTime() != null){
+            String fullDate = getEndTime();
+            String dateTime = fullDate.substring(0, fullDate.length() - 5);
+            String[] dateTimeArr = dateTime.split("T");
+            dateString = dateTimeArr[0] + " " + dateTimeArr[1];
+        }else {
+            dateString = "-";
+        }
+//        System.out.println("dateString = " + fullDate);
         return dateString;
     }
 

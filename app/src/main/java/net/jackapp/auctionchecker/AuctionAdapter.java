@@ -39,20 +39,40 @@ public class AuctionAdapter extends ArrayAdapter<Auction> {
         CaviarTV priceTv = (CaviarTV) convertView.findViewById(R.id.price_row);
         CaviarTV bidTv = (CaviarTV) convertView.findViewById(R.id.bid_row);
         ImageView pictureIv = (ImageView) convertView.findViewById(R.id.picture_row);
+        ImageView activeIv = (ImageView) convertView.findViewById(R.id.active_row);
+        CaviarTV endTimeTv = (CaviarTV) convertView.findViewById(R.id.date_row);
+        bidTv.setVisibility(View.VISIBLE);
 
         try {
-            URL picUrl = new URL(auction.getPicture());
-            InputStream in = picUrl.openConnection().getInputStream();
-            picBmp = BitmapFactory.decodeStream(in);
-            pictureIv.setImageBitmap(picBmp);
+            if (auction.getPicture() != "") {
+                URL picUrl = new URL(auction.getPicture());
+                InputStream in = picUrl.openConnection().getInputStream();
+                picBmp = BitmapFactory.decodeStream(in);
+                pictureIv.setImageBitmap(picBmp);
+            }else {
+                pictureIv.setImageResource(R.drawable.img_no_img);
+            }
         } catch (IOException e) {
-            Log.e("jkE", e.toString());
+            Log.e("AuctionAdapter getView", e.toString());
             e.printStackTrace();
         }
 
         titleTv.setText(auction.getTitle());
-        priceTv.setText(auction.getCurrencyPrice());
-        bidTv.setText(auction.getCurrencyBid());
+        endTimeTv.setText(auction.getEndDateTime());
+
+        if (auction.getStatus().equals("Active")) {
+            activeIv.setImageResource(R.drawable.green_dot);
+        } else {
+            activeIv.setImageResource(R.drawable.red_dot);
+        }
+
+        if(auction.getCurrencyPrice().equals("-")){
+            bidTv.setVisibility(View.GONE);
+            priceTv.setText(auction.getCurrencyBid());
+        }else {
+            priceTv.setText(auction.getCurrencyPrice());
+            bidTv.setText(auction.getCurrencyBid());
+        }
 
         notifyDataSetChanged();
 

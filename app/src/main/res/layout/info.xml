@@ -3,22 +3,75 @@
     android:id="@+id/info_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#000"
+    android:background="#1a1a1a"
     android:clickable="true"
     android:foregroundGravity="center"
     android:scrollbars="vertical">
 
+    <RelativeLayout
+        android:id="@+id/info_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorTopBar"
+        >
+        <net.jackapp.auctionchecker.CaviarTV
+            android:id="@+id/close_info_tv"
+            android:clickable="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Close"
+            android:textSize="12dp"
+            android:textColor="@color/colorButtonTxt"
+            android:layout_alignParentRight="true"
+            android:padding="10dp"
+            />
+        <net.jackapp.auctionchecker.CaviarTV
+            android:id="@+id/title_info_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Checking..."
+            android:textSize="12dp"
+            android:textColor="#999"
+            android:layout_alignParentLeft="true"
+            android:padding="10dp"
+            />
+    </RelativeLayout>
+
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/info_sv"
+        android:layout_below="@id/info_top_bar"
+        android:padding="5dp">
 
-        <net.jackapp.auctionchecker.CaviarTV
-            android:id="@+id/info_tv"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:padding="10dp"
-            android:text=""
-            android:textColor="#fff" />
+            android:id="@+id/info_tv_list"
+            android:orientation="vertical">
+
+            <ListView
+                android:id="@+id/info_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </ListView>
+
+            <!--&lt;!&ndash;<TextView&ndash;&gt;-->
+                <!--&lt;!&ndash;android:id="@+id/info_auction_title_tv"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:layout_height="match_parent"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:text="TitleTitleTi tleTitleTitleTi tleTit leTitleTitleTitl dlfk fjal;djf lasdjflsjfa;djklfa"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:textColor="#fff" />&ndash;&gt;-->
+            <!--&lt;!&ndash;<TextView&ndash;&gt;-->
+                <!--&lt;!&ndash;android:id="@+id/info_auction_price_tv"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:layout_height="match_parent"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:text="TitleTitleTi tleTitleTitleTi tleTit leTitleTitleTitl dlfk fjal;djf lasdjflsjfa;djklfa"&ndash;&gt;-->
+                <!--&lt;!&ndash;android:textColor="#fff" />&ndash;&gt;-->
+        </LinearLayout>
+
     </ScrollView>
 </RelativeLayout>
 

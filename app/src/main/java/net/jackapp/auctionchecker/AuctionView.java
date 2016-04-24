@@ -9,7 +9,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,43 +25,77 @@ import java.net.URL;
  */
 public class AuctionView extends Activity {
 
-    TextView priceTv, bidTv, urlTv, endTimeTv, activeTv, countryTv;
-    ImageView pictureIv, pictureIvBg;
+    TextView priceTv, bidTv, priceLblTv, bidLblTv, urlTv, endTimeTv, countryTv, titleTv;
+    ImageView pictureIv, pictureIvBg, activeIv;
+    ListView historyList;
     Auction auction;
+    String historyString;
+    JSONArray historyArray;
+    JSONObject historyJsonObj;
+    Intent context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.auction_view);
-        auction = getIntent().getParcelableExtra("auction");
+        context = getIntent();
+        System.out.println("context = " + context);
 
+        setContentView(R.layout.auction_view);
+        auction = getIntent().getParcelableExtra("auctionToView");
+        historyString = getIntent().getStringExtra("history");
+        try {
+            historyArray = new JSONArray(historyString);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         initViewObj();
         setDataViewObj();
 
 
     }
 
-    private void initViewObj(){
+    private void initViewObj() {
+        priceLblTv = (TextView) findViewById(R.id.price_view_lbl);
         priceTv = (TextView) findViewById(R.id.price_view);
         bidTv = (TextView) findViewById(R.id.bid_view);
+        bidLblTv = (TextView) findViewById(R.id.bid_view_lbl);
         urlTv = (TextView) findViewById(R.id.url_view);
         endTimeTv = (TextView) findViewById(R.id.end_time_view);
-        activeTv = (TextView) findViewById(R.id.active_view);
+        activeIv = (ImageView) findViewById(R.id.active_view);
         countryTv = (TextView) findViewById(R.id.country_view);
         pictureIv = (ImageView) findViewById(R.id.picture_view);
         pictureIvBg = (ImageView) findViewById(R.id.picture_view_bg);
+        titleTv = (TextView) findViewById(R.id.title_view);
+        historyList = (ListView) findViewById(R.id.history_list_view);
 
     }
 
-    private void setDataViewObj(){
+    private void setDataViewObj() {
 
         priceTv.setText(auction.getCurrencyPrice());
         bidTv.setText(auction.getCurrencyBid());
         endTimeTv.setText(auction.getEndDateTime());
-        activeTv.setText(auction.getStatus());
         countryTv.setText(auction.getCountry());
+        titleTv.setText(auction.getTitle());
 
+        if (priceTv.getText().equals("-")) {
+            priceLblTv.setVisibility(View.GONE);
+            priceTv.setVisibility(View.GONE);
+            bidLblTv.setText("Price:");
+        } else {
+            priceTv.setVisibility(View.VISIBLE);
+            priceLblTv.setVisibility(View.VISIBLE);
+            bidLblTv.setText("Bid:");
+        }
+
+        if (auction.getStatus().equals("Active")) {
+            activeIv.setImageResource(R.drawable.green_dot);
+        } else {
+            activeIv.setImageResource(R.drawable.red_dot);
+        }
+
+        urlTv.setText(auction.getUrl());
         urlTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,6 +104,8 @@ public class AuctionView extends Activity {
             }
         });
 
+        HistoryAdapter historyAdapter = new HistoryAdapter(getApplicationContext(), historyArray, auction.getCurrency());
+        historyList.setAdapter(historyAdapter);
         new GetAuctionPic().execute(auction.getPicture());
 
     }
@@ -76,7 +117,9 @@ public class AuctionView extends Activity {
         protected Bitmap doInBackground(String... params) {
             Bitmap pic = null;
             try {
-                pic = BitmapFactory.decodeStream((InputStream) new URL(params[0]).getContent());
+                if (params[0] != null && !params[0].equals("")) {
+                    pic = BitmapFactory.decodeStream((InputStream) new URL(params[0]).getContent());
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -94,6 +137,9 @@ public class AuctionView extends Activity {
                 assert pictureIv != null;
                 pictureIv.setImageBitmap(pic);
 
+            } else {
+                pictureIv.setImageResource(R.drawable.no_img);
+                pictureIvBg.setImageResource(R.drawable.no_img);
             }
         }
     }

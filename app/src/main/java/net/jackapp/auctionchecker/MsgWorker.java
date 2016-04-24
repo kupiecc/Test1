@@ -18,7 +18,7 @@ public class MsgWorker extends Dialog {
         Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.info);
         dialog.setTitle("Checking...");
-        TextView infoTv = (TextView) findViewById(R.id.info_tv);
+        TextView infoTv = (TextView) findViewById(R.id.info_auction_title_tv);
         infoTv.setText(msg);
         dialog.show();
 

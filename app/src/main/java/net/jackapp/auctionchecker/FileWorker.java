@@ -64,6 +64,7 @@ public class FileWorker {
         String readString = "";
         File jsonFile = new File(context.getApplicationContext().getFilesDir(), fileName);
 
+        System.out.println("jsonFile = " + jsonFile.toString());
         try{
             createJsonFile(context, fileName);
             in = new BufferedInputStream(new FileInputStream(jsonFile));

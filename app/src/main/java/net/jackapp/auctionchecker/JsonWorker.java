@@ -11,8 +11,13 @@ import org.json.JSONException;
  */
 public class JsonWorker {
 
+    private final String ITEM_ID = "ItemID";
+
     String dataString;
-    FileWorker fileWorker;
+    FileWorker fileWorker = new FileWorker();
+
+    public JsonWorker() {
+    }
 
     public JSONArray readFileToJsonArray(Context context, String fileName) throws JSONException {
         try {
@@ -27,5 +32,19 @@ public class JsonWorker {
         Log.d("readDB", dataString);
 
         return null;
+    }
+
+    public JSONArray removeAuctionFromJson(JSONArray db, String auctionID) {
+        JSONArray newDb = new JSONArray();
+        for (int i = 0; i < db.length(); i++) {
+            try {
+                if (db.getJSONObject(i).getString(ITEM_ID) != auctionID) {
+                    newDb.put(db.getJSONObject(i));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return newDb;
     }
 }
