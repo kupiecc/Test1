@@ -39,7 +39,7 @@
         android:clickable="true"
         android:padding="5dp"
         android:text="SHOW PAGE"
-        android:textColor="@color/colorButtonTxt"
+        android:textColor="@color/colorButtonTxtLight"
         android:textSize="14dp" />
 
 </LinearLayout>

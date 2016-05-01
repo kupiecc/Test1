@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:text="Close"
             android:textSize="12dp"
-            android:textColor="@color/colorButtonTxt"
+            android:textColor="@color/colorButtonTxtLight"
             android:layout_alignParentRight="true"
             android:padding="10dp"
             />

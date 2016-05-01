@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
     Auction foundAuction, auctionAnalyzeEbay, auctionAnalyzeApp;
     Bitmap picBmp;
     FileWorker fileWorker = new FileWorker();
-    ImageView picAuctionIv;
+    ImageView picAuctionIv, updateBtn, pasteBtn;
     Integer auctionCount = 0, auctionCheckNum;
     JSONArray auctionsJsonArr;
     JSONObject countriesDBJson, jItem, analyzeJsonItem;
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
     String auctionMsg;
     RelativeLayout foundLayout, infoLayout;
     String itemId, auctionDBString, siteExtension, countriesDBString, testString;
-    TextView urlTv, priceTv, pasteButtonTv, titleTv, bidTv, updateButtonTv, closeInfoButtonTv, saveBtnTv, clearBtnTv, infoTitleTv;
+    TextView urlTv, priceTv, titleTv, bidTv, closeInfoButtonTv, saveBtnTv, clearBtnTv, infoTitleTv;
     View infoItem, infoItemEnd;
     DecimalFormat decimalFormat;
 
@@ -122,6 +122,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+//        setSupportActionBar(toolbar);
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -168,13 +171,13 @@ public class MainActivity extends AppCompatActivity {
     private void initViewObject() {
         urlTv = (TextView) findViewById(R.id.url_auction);
         priceTv = (TextView) findViewById(R.id.price_found);
-        pasteButtonTv = (TextView) findViewById(R.id.paste_button_tv);
+//        pasteButtonTv = (TextView) findViewById(R.id.paste_button_tv);
         titleTv = (TextView) findViewById(R.id.title_found);
         bidTv = (TextView) findViewById(R.id.bid_found);
         listAuctionsLv = (ListView) findViewById(R.id.list_auctions);
         picAuctionIv = (ImageView) findViewById(R.id.picture_found);
         infoLayout = (RelativeLayout) findViewById(R.id.info);
-        updateButtonTv = (TextView) findViewById(R.id.update_button_tv);
+        updateBtn = (ImageView) findViewById(R.id.update_btn);
         saveBtnTv = (TextView) findViewById(R.id.save_auction_btn_tv);
         clearBtnTv = (TextView) findViewById(R.id.clear_view_btn_tv);
 
@@ -220,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.paste_toolbar) {
             return true;
         }
 
@@ -396,6 +399,9 @@ public class MainActivity extends AppCompatActivity {
         auctionCount = auctionCount - 1;
     }
 
+    public void clickFAB(View view) {
+    }
+
     class AnalyzeAuctions extends AsyncTask<Integer, Void, Void> {
 
         final String URL_JSON = "UrlJson";
@@ -500,7 +506,7 @@ public class MainActivity extends AppCompatActivity {
                 checkAuction();
             } else {
                 infoListLayout.addView(infoItemEnd);
-                updateButtonTv.setClickable(true);
+                updateBtn.setClickable(true);
             }
 
         }
@@ -694,12 +700,12 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
-            titleTv.setText(foundAuction.getTitle());
-            priceTv.setText(foundAuction.getCurrencyPrice());
-            bidTv.setText(foundAuction.getCurrencyBid());
+            if (foundAuction.getTitle() != null) titleTv.setText(foundAuction.getTitle());
+            if (foundAuction.getCurrencyPrice() != null) priceTv.setText(foundAuction.getCurrencyPrice());
+            if (foundAuction.getCurrencyBid() != null) bidTv.setText(foundAuction.getCurrencyBid());
             if (foundAuction.getTitle() != null) saveBtnTv.setVisibility(View.VISIBLE);
             clearBtnTv.setVisibility(View.VISIBLE);
-            pasteButtonTv.setClickable(true);
+//            pas.setClickable(true);
         }
 
         protected void getAuctionItem(String jsonString) throws JSONException {

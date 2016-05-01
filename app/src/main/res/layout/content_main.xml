@@ -8,161 +8,149 @@
     tools:context="net.jackapp.auctionchecker.MainActivity"
     tools:showIn="@layout/activity_main">
 
+    <!--<LinearLayout-->
+        <!--android:id="@+id/top_layout"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="@color/colorPrimary"-->
+        <!--android:orientation="vertical"-->
+        <!--&gt;-->
 
+        <!--<net.jackapp.auctionchecker.CaviarTV-->
+            <!--android:id="@+id/url_auction"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="25dp"-->
+            <!--android:layout_margin="3dp"-->
+            <!--android:background="@drawable/rounded_corner"-->
+            <!--android:ellipsize="middle"-->
+            <!--android:hint="Paste auction link."-->
+            <!--android:padding="3dp"-->
+            <!--android:singleLine="true"-->
+            <!--android:textAlignment="center"-->
+            <!--android:textColorHint="@color/colorTxt" />-->
 
-    <RelativeLayout
-        android:id="@+id/top_layout"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorTopBar"
-        android:orientation="horizontal"
-        android:padding="0dp">
+        <!--<ImageView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:src="@mipmap/ic_update_white_24dp"-->
+            <!--android:padding="7dp"-->
+            <!--android:id="@+id/update_btn"/>-->
 
-        <net.jackapp.auctionchecker.CaviarTV
-            android:id="@+id/url_auction"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="middle"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:singleLine="true"
-            android:hint="Paste auction link."
-            android:textColorHint="#777"
-            android:textAlignment="center"
-            android:layout_marginBottom="0dp"
-            android:background="@drawable/rounded_corner"
-            android:shadowColor="#000000"
-            android:shadowDx="4"
-            android:shadowDy="4"
-            android:shadowRadius="5"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp" />
-
-        <net.jackapp.auctionchecker.CaviarTV
-            android:id="@+id/paste_button_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/url_auction"
-            android:text="Paste"
-            android:textColor="#4992ff"
-            android:layout_alignParentRight="true"
-            android:clickable="true"
-            android:onClick="onPasteAuctionLink"
-            android:paddingLeft="15dp"
-            android:paddingTop="5dp"
-            android:paddingRight="15dp" />
-        <net.jackapp.auctionchecker.CaviarTV
-            android:id="@+id/update_button_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/url_auction"
-            android:text="Check auctions"
-            android:textColor="@color/colorButtonTxt"
-            android:layout_alignParentLeft="true"
-            android:clickable="true"
-            android:onClick="onUpdateAuctions"
-            android:paddingLeft="15dp"
-            android:paddingTop="5dp"
-            android:paddingRight="15dp"
-            android:paddingBottom="10dp" />
-
-
-    </RelativeLayout>
+    <!--</LinearLayout>-->
 
     <RelativeLayout
         android:id="@+id/found_layout"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/top_layout"
-        android:padding="10dp"
-        android:visibility="gone"
         android:background="#ffffff"
-        >
+        android:padding="10dp"
+        android:visibility="gone">
 
         <net.jackapp.auctionchecker.CaviarTV
             android:id="@+id/title_found"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:linksClickable="false"
+            android:longClickable="false"
+            android:maxLines="2"
             android:text="Title"
             android:textColor="#333333"
-            android:textSize="18dp"
-            android:maxLines="2"
-            android:longClickable="false"
-            android:linksClickable="false"
-            android:ellipsize="end" />
+            android:textSize="18dp" />
+
         <ImageView
             android:id="@+id/picture_found"
             android:layout_width="match_parent"
             android:layout_height="200dp"
+            android:layout_below="@id/title_found"
             android:layout_marginBottom="5dp"
             android:layout_marginTop="5dp"
-            android:src="@drawable/no_img"
             android:background="#ffffff"
-            android:layout_below="@id/title_found"
-            />
+            android:src="@drawable/no_img" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/picture_found"
-            >
+            android:layout_below="@id/picture_found">
 
             <net.jackapp.auctionchecker.CaviarTV
                 android:id="@+id/price_found"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="-"
                 android:layout_weight="1"
-                android:textAlignment="center"
-                />
+                android:text="-"
+                android:textAlignment="center" />
+
             <net.jackapp.auctionchecker.CaviarTV
                 android:id="@+id/save_auction_btn_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Save"
-                android:visibility="gone"
-                android:textColor="#0088ff"
-                android:onClick="saveAuction"
-                android:clickable="true"
                 android:layout_weight="1"
-                android:textAlignment="center" />
+                android:clickable="true"
+                android:onClick="saveAuction"
+                android:text="Save"
+                android:textAlignment="center"
+                android:textColor="#0088ff"
+                android:visibility="gone" />
+
             <net.jackapp.auctionchecker.CaviarTV
                 android:id="@+id/clear_view_btn_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Close"
-                android:visibility="gone"
-                android:clickable="true"
-                android:textColor="#0088ff"
-                android:onClick="closeFoundItem"
                 android:layout_weight="1"
+                android:clickable="true"
+                android:onClick="closeFoundItem"
+                android:text="Close"
                 android:textAlignment="center"
-                />
+                android:textColor="#0088ff"
+                android:visibility="gone" />
+
             <net.jackapp.auctionchecker.CaviarTV
                 android:id="@+id/bid_found"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="-"
-                android:textAlignment="center"
                 android:layout_weight="1"
-                />
+                android:text="-"
+                android:textAlignment="center" />
         </LinearLayout>
     </RelativeLayout>
 
+    <android.support.v7.widget.Toolbar
+    android:id="@+id/main_toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:background="@color/colorPrimary"
+    android:elevation="4dp"
+    app:subtitleTextColor="@color/colorButtonTxtLight"
+    app:titleTextColor="@color/colorButtonTxtLight"
+    android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
     <ListView
+        android:id="@+id/list_auctions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/list_auctions"
-        android:background="#ddd"
-        android:divider="@null"
-        android:padding="5dp"
-        android:layout_below="@+id/found_layout"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        />
+        android:layout_below="@+id/found_layout"
+        android:background="#ddd"
+        android:divider="@null"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:padding="5dp" />
 
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:onClick="onPasteAuctionLink"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp"
+        android:src="@mipmap/ic_content_paste_white_24dp"
+        app:backgroundTint="@color/colorAccent"
+        app:layout_behavior="com.support.android.designlibdemo.ScrollAwareFABBehavior"
+         />
 
 
 </RelativeLayout>

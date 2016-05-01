@@ -42,6 +42,8 @@ public class AuctionAdapter extends ArrayAdapter<Auction> {
         ImageView activeIv = (ImageView) convertView.findViewById(R.id.active_row);
         CaviarTV endTimeTv = (CaviarTV) convertView.findViewById(R.id.date_row);
         bidTv.setVisibility(View.VISIBLE);
+        BitmapFactory.Options bfOptions = new BitmapFactory.Options();
+
 
         try {
             if (auction.getPicture() != "") {

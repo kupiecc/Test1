@@ -190,7 +190,13 @@
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
         android:background="#222"
-        android:orientation="vertical">
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:src="@mipmap/ic_http_white_36dp"/>
 
         <TextView
             android:id="@+id/url_view"
@@ -219,6 +225,16 @@
             android:layout_height="wrap_content"></ListView>
 
     </LinearLayout>
+
+    <RelativeLayout
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:src="@mipmap/ic_delete_white_48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
 
 
 </LinearLayout>

@@ -8,8 +8,6 @@
     tools:context="net.jackapp.auctionchecker.MainActivity">
 
 
-
-
     <include layout="@layout/content_main" />
 
 </android.support.design.widget.CoordinatorLayout>
