@@ -25,7 +25,7 @@ import java.net.URL;
  */
 public class AuctionView extends Activity {
 
-    TextView priceTv, bidTv, priceLblTv, bidLblTv, urlTv, endTimeTv, countryTv, titleTv;
+    TextView buyItNowTv, priceTv, buyItNowLblTv, priceLblTv, urlTv, endTimeTv, countryTv, titleTv;
     ImageView pictureIv, pictureIvBg, activeIv;
     ListView historyList;
     Auction auction;
@@ -56,10 +56,10 @@ public class AuctionView extends Activity {
     }
 
     private void initViewObj() {
-        priceLblTv = (TextView) findViewById(R.id.price_view_lbl);
+        buyItNowLblTv = (TextView) findViewById(R.id.buy_it_now_view_lbl);
+        buyItNowTv = (TextView) findViewById(R.id.buy_it_now_view);
         priceTv = (TextView) findViewById(R.id.price_view);
-        bidTv = (TextView) findViewById(R.id.bid_view);
-        bidLblTv = (TextView) findViewById(R.id.bid_view_lbl);
+        priceLblTv = (TextView) findViewById(R.id.price_view_lbl);
         urlTv = (TextView) findViewById(R.id.url_view);
         endTimeTv = (TextView) findViewById(R.id.end_time_view);
         activeIv = (ImageView) findViewById(R.id.active_view);
@@ -73,20 +73,20 @@ public class AuctionView extends Activity {
 
     private void setDataViewObj() {
 
+        buyItNowTv.setText(auction.getCurrencyBuyItNow());
         priceTv.setText(auction.getCurrencyPrice());
-        bidTv.setText(auction.getCurrencyBid());
         endTimeTv.setText(auction.getEndDateTime());
         countryTv.setText(auction.getCountry());
         titleTv.setText(auction.getTitle());
 
-        if (priceTv.getText().equals("-")) {
-            priceLblTv.setVisibility(View.GONE);
-            priceTv.setVisibility(View.GONE);
-            bidLblTv.setText("Price:");
+        if (buyItNowTv.getText().equals("-")) {
+            buyItNowLblTv.setVisibility(View.GONE);
+            buyItNowTv.setVisibility(View.GONE);
+            priceLblTv.setText("BuyItNow:");
         } else {
-            priceTv.setVisibility(View.VISIBLE);
-            priceLblTv.setVisibility(View.VISIBLE);
-            bidLblTv.setText("Bid:");
+            buyItNowTv.setVisibility(View.VISIBLE);
+            buyItNowLblTv.setVisibility(View.VISIBLE);
+            priceLblTv.setText("Price:");
         }
 
         if (auction.getStatus().equals("Active")) {

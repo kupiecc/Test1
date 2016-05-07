@@ -11,6 +11,12 @@
         <!--app:actionViewClass="android.support.v7.widget.SearchView"-->
          <!--/>-->
     <item
+        android:id="@+id/update_toolbar"
+        android:icon="@mipmap/ic_update_white_24dp"
+        android:title="Update"
+        app:showAsAction="ifRoom"
+        />
+    <item
         android:id="@+id/paste_toolbar"
         android:icon="@mipmap/ic_content_paste_white_24dp"
         android:title="Paste"

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <set android:ordering="together">
+        <set>
+        </set>
+        <objectAnimator
+            android:propertyName="scaleX"
+            android:duration="500"
+            android:valueTo="1.5"/>
+        <objectAnimator
+            android:propertyName="scaleY"
+            android:duration="500"
+            android:valueTo="1.5"/>
+        <objectAnimator
+            android:propertyName="pivotX"
+            android:duration="500"
+            android:valueTo="1"/>
+        <objectAnimator
+            android:propertyName="pivotY"
+            android:duration="500"
+            android:valueTo="1"/>
+        <objectAnimator
+            android:propertyName=""
+            android:duration="500"
+            android:valueTo="1"/>
+        <!--<objectAnimator-->
+            <!--android:propertyName="alpha"-->
+            <!--android:duration="500"-->
+            <!--android:valueTo="0.1f"/>-->
+    </set>
+
+</set>
