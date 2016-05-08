@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:padding="5dp"
-    android:layout_height="match_parent">
+    android:id="@+id/history_row_layout"
+    android:layout_height="wrap_content">
 
     <net.jackapp.auctionchecker.CaviarTV
         android:id="@+id/history_row_date"
@@ -11,31 +12,31 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <net.jackapp.auctionchecker.CaviarTV
-        android:id="@+id/history_row_price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#fff"
-        android:layout_marginLeft="10dp"
-        android:text="Bid: 450.00PLN"/>
+    <!--<net.jackapp.auctionchecker.CaviarTV-->
+        <!--android:id="@+id/history_row_price"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textColor="#fff"-->
+        <!--android:layout_marginLeft="10dp"-->
+        <!--android:text="Bid: 450.00PLN"/>-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <net.jackapp.auctionchecker.CaviarTV
-            android:id="@+id/history_row_bid"
+            android:id="@+id/history_row_price"
             android:textColor="#fff"
             android:layout_marginLeft="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Bid: 450.00PLN"/>
+            android:text="Price : xx450.00PLN"/>
         <net.jackapp.auctionchecker.CaviarTV
             android:id="@+id/history_row_buy_it_now"
             android:textColor="#fff"
             android:layout_width="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_height="wrap_content"
-            android:text="Bid: 450.00PLN"/>
+            android:text="Buy It Now: xx450.00PLN"/>
     </LinearLayout>
 
 </LinearLayout>

@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 
 /**
@@ -20,12 +21,10 @@ public class Auction implements Parcelable {
     private JSONArray history;
     private String historyString;
     private String historyPrice;
-    private String historyBid;
     private String historyBuyItNow;
     private String historyDate;
     private String price;
     private String buyItNow;
-    private String bid;
     private String currency;
     private String endDateTime;
     private String endDate;
@@ -48,13 +47,15 @@ public class Auction implements Parcelable {
 
     DecimalFormat currencyFormat;
     DecimalFormat decimalFormat;
-
+    DecimalFormatSymbols symbols;
 
     public Auction() {
         currencyFormat = new DecimalFormat("###,###.00");
         currencyFormat.setMaximumFractionDigits(2);
         decimalFormat = new DecimalFormat("###.00");
         decimalFormat.setMaximumFractionDigits(2);
+        symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator('.');
     }
 
     public Auction(Parcel source) {
@@ -62,7 +63,6 @@ public class Auction implements Parcelable {
         this.version = source.readString();
         this.price = source.readString();
         this.buyItNow = source.readString();
-        this.bid = source.readString();
         this.currency = source.readString();
         this.endTime = source.readString();
         this.url = source.readString();
@@ -91,7 +91,6 @@ public class Auction implements Parcelable {
         dest.writeString(version);
         dest.writeString(price);
         dest.writeString(buyItNow);
-        dest.writeString(bid);
         dest.writeString(currency);
         dest.writeString(endTime);
         dest.writeString(url);
@@ -244,6 +243,7 @@ public class Auction implements Parcelable {
                 Float buyItNowF = Float.parseFloat(buyItNow);
                 decimalFormat = new DecimalFormat("###.00");
                 decimalFormat.setMaximumFractionDigits(2);
+                decimalFormat.setDecimalFormatSymbols(symbols);
                 String newbuyItNow = decimalFormat.format(buyItNowF);
                 return newbuyItNow;
             }
@@ -260,6 +260,7 @@ public class Auction implements Parcelable {
                 Float buyItNowF = Float.valueOf(buyItNow);
                 currencyFormat = new DecimalFormat("###,###.00");
                 currencyFormat.setMaximumFractionDigits(2);
+                currencyFormat.setDecimalFormatSymbols(symbols);
                 String buyItNowCurr = currencyFormat.format(buyItNowF);
                 return buyItNowCurr + " " + getCurrency();
             }
@@ -281,8 +282,10 @@ public class Auction implements Parcelable {
         try {
             if (price != null && price != "-") {
                 Float priceF = Float.parseFloat(price);
+
                 decimalFormat = new DecimalFormat("###.00");
                 decimalFormat.setMaximumFractionDigits(2);
+                decimalFormat.setDecimalFormatSymbols(symbols);
                 String newPrice = decimalFormat.format(priceF);
                 return newPrice;
             }
@@ -299,6 +302,7 @@ public class Auction implements Parcelable {
                 Float priceF = Float.valueOf(price);
                 currencyFormat = new DecimalFormat("###,###.00");
                 currencyFormat.setMaximumFractionDigits(2);
+                currencyFormat.setDecimalFormatSymbols(symbols);
                 String priceCurr = currencyFormat.format(priceF);
                 return priceCurr + " " + getCurrency();
             }

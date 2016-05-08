@@ -23,7 +23,7 @@ public class JsonWorker {
         try {
             dataString = fileWorker.readFile(context, fileName);
             if (!dataString.equals(""))
-                return  new JSONArray(dataString);
+                return new JSONArray(dataString);
             else
                 return new JSONArray();
         } catch (JSONException e) {

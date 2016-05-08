@@ -8,7 +8,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -28,6 +30,7 @@ public class AuctionView extends Activity {
     TextView buyItNowTv, priceTv, buyItNowLblTv, priceLblTv, urlTv, endTimeTv, countryTv, titleTv;
     ImageView pictureIv, pictureIvBg, activeIv;
     ListView historyList;
+    LinearLayout historyListLayout, historyRowLayout;
     Auction auction;
     String historyString;
     JSONArray historyArray;
@@ -39,7 +42,6 @@ public class AuctionView extends Activity {
         super.onCreate(savedInstanceState);
 
         context = getIntent();
-        System.out.println("context = " + context);
 
         setContentView(R.layout.auction_view);
         auction = getIntent().getParcelableExtra("auctionToView");
@@ -68,6 +70,8 @@ public class AuctionView extends Activity {
         pictureIvBg = (ImageView) findViewById(R.id.picture_view_bg);
         titleTv = (TextView) findViewById(R.id.title_view);
         historyList = (ListView) findViewById(R.id.history_list_view);
+        historyListLayout = (LinearLayout) findViewById(R.id.history_list_view_layout);
+        historyRowLayout = (LinearLayout) findViewById(R.id.history_row_layout);
 
     }
 
@@ -82,7 +86,7 @@ public class AuctionView extends Activity {
         if (buyItNowTv.getText().equals("-")) {
             buyItNowLblTv.setVisibility(View.GONE);
             buyItNowTv.setVisibility(View.GONE);
-            priceLblTv.setText("BuyItNow:");
+            priceLblTv.setText("Buy It Now:");
         } else {
             buyItNowTv.setVisibility(View.VISIBLE);
             buyItNowLblTv.setVisibility(View.VISIBLE);
@@ -104,8 +108,21 @@ public class AuctionView extends Activity {
             }
         });
 
+        System.out.println("historyArray = " + historyArray);
         HistoryAdapter historyAdapter = new HistoryAdapter(getApplicationContext(), historyArray, auction.getCurrency());
         historyList.setAdapter(historyAdapter);
+        int historyCount = historyAdapter.getCount();
+        int historyHeight = 100;
+        for (int i = 0; i < historyAdapter.getCount(); i++) {
+            View historyChild = historyAdapter.getView(i, null, historyList);
+            historyChild.measure(0,0);
+            historyHeight += historyChild.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams listParams = historyListLayout.getLayoutParams();
+        listParams.height = historyHeight;
+        historyListLayout.setLayoutParams(listParams);
+        historyListLayout.requestLayout();
         new GetAuctionPic().execute(auction.getPicture());
 
     }

@@ -25,8 +25,8 @@ public class FileWorker {
 
         File jsonFile = new File(context.getApplicationContext().getFilesDir(), jsonFileName);
 
-        try{
-            if(!jsonFile.exists()){
+        try {
+            if (!jsonFile.exists()) {
 
                 jsonFile.createNewFile();
                 Toast.makeText(context.getApplicationContext(), "", Toast.LENGTH_LONG).show();
@@ -44,9 +44,8 @@ public class FileWorker {
         File jsonFile = new File(context.getApplicationContext().getFilesDir(), jsonFileName);
 //        String jsonToSaveString = jsonToSave;
         FileOutputStream os;
-        try{
-            if(!jsonFile.exists())
-            {
+        try {
+            if (!jsonFile.exists()) {
                 jsonFile.createNewFile();
             }
             os = context.openFileOutput(jsonFileName, Context.MODE_PRIVATE);
@@ -63,9 +62,7 @@ public class FileWorker {
         InputStream in = null;
         String readString = "";
         File jsonFile = new File(context.getApplicationContext().getFilesDir(), fileName);
-
-        System.out.println("jsonFile = " + jsonFile.toString());
-        try{
+        try {
             createJsonFile(context, fileName);
             in = new BufferedInputStream(new FileInputStream(jsonFile));
             int size = in.available();
@@ -73,7 +70,6 @@ public class FileWorker {
             in.read(buffer);
             in.close();
             readString = new String(buffer, "UTF-8");
-
         } catch (IOException e) {
             Log.d("jk", e.getMessage());
             e.printStackTrace();
@@ -82,24 +78,25 @@ public class FileWorker {
         return readString;
 
     }
+
     public String readFile(Context context, String fileName, AssetManager assetManager) throws JSONException {
 
         InputStream in = null;
         StringBuilder readString = new StringBuilder();
         BufferedReader reader = null;
 
-        try{
+        try {
             reader = new BufferedReader(new InputStreamReader(assetManager.open(fileName), "UTF-8"));
             String line = "";
-            while ((line = reader.readLine()) != null){
+            while ((line = reader.readLine()) != null) {
                 readString.append(line);
             }
         } catch (IOException e) {
             Log.d("jk", e.getMessage());
             e.printStackTrace();
         } finally {
-            try{
-                if(reader != null)
+            try {
+                if (reader != null)
                     reader.close();
             } catch (IOException e) {
                 e.printStackTrace();
