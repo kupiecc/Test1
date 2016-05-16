@@ -19,19 +19,20 @@ import android.os.StrictMode;
 import android.os.SystemClock;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String[] drawerStringList;
 
+    ActionBarDrawerToggle drawerToggle;
     ArrayList<Auction> auctionsList;
     AuctionAdapter auctionsAdapter;
     AuctionRecyclerAdapter auctionRecyclerAdapter;
@@ -80,19 +82,20 @@ public class MainActivity extends AppCompatActivity {
     DecimalFormat decimalFormat;
     DrawerLayout drawerLayout;
     FileWorker fileWorker = new FileWorker();
+    FrameLayout drawerFrameLayout;
     ImageView picAuctionIv, updateBtn;
     Integer auctionCount = 0, auctionCheckNum;
-    JSONArray auctionsJsonArr;
-    JSONObject countriesDBJson, jItem, analyzeJsonItem;
+    public static JSONArray auctionsJsonArr;
+    JSONObject countriesDBJson, jItemFromPaste, analyzeJsonItem;
     JsonWorker jsonWorker = new JsonWorker();
-    LinearLayout infoListLayout, foundLayout;
+    LinearLayout infoListLayout, foundLayout, drawerLayoutPaste;
     ListView drawerLv;
     LayoutInflater layoutInflater;
     String auctionMsg;
     RecyclerView listAuctionsLv;
     RelativeLayout infoLayout;
     String itemId, siteExtension, countriesDBString;
-    TextView buyItNowTv, titleTv, priceTv, closeInfoButtonTv, saveBtnTv, clearBtnTv, infoTitleTv;
+    TextView buyItNowTv, titleTv, priceTv, closeInfoButtonTv, saveBtnTv, clearBtnTv, infoTitleTv, drawerPasteTv;
     Toolbar toolbar;
     View infoItem, infoItemEnd;
 
@@ -110,6 +113,8 @@ public class MainActivity extends AppCompatActivity {
 
         initViewObject();
         loadCountriesCode();
+
+        background();
 
         BroadcastReceiver receiver = new BroadcastReceiver() {
             @Override
@@ -136,11 +141,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadJsonToLv() throws JSONException {
 
-        auctionsJsonArr = jsonWorker.readFileToJsonArray(this, Constants.JSON_DB_NAME);
+        MainActivity.auctionsJsonArr = jsonWorker.readFileToJsonArray(this, Constants.JSON_DB_NAME);
+//        System.out.println(" history " + MainActivity.auctionsJsonArr.getJSONObject(0).getJSONObject(Constants.HISTORY));
         auctionsList = new ArrayList<>();
         auctionsList.clear();
+        ArrayList<Auction> newAuctions = Auction.loadFromJsonArray();
         auctionsAdapter = new AuctionAdapter(getApplicationContext(), auctionsList);
-        ArrayList<Auction> newAuctions = Auction.loadFromJsonArray(auctionsJsonArr);
         auctionsAdapter.clear();
         auctionsAdapter.addAll(newAuctions);
 
@@ -168,16 +174,6 @@ public class MainActivity extends AppCompatActivity {
         assert toolbar != null;
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (drawerLayout.isDrawerVisible(Gravity.LEFT)) {
-                    return;
-                } else {
-                    drawerLayout.openDrawer(Gravity.LEFT);
-                }
-            }
-        });
 
 
         buyItNowTv = (TextView) findViewById(R.id.buy_it_now_found);
@@ -188,11 +184,49 @@ public class MainActivity extends AppCompatActivity {
         infoLayout = (RelativeLayout) findViewById(R.id.info);
         saveBtnTv = (TextView) findViewById(R.id.save_auction_btn_tv);
         clearBtnTv = (TextView) findViewById(R.id.clear_view_btn_tv);
-
-        drawerStringList = getResources().getStringArray(R.array.planets_array);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerStringList = getResources().getStringArray(R.array.drawer_items);
+        drawerLv = (ListView) findViewById(R.id.drawer_lv);
 
-        registerForContextMenu(listAuctionsLv);
+        DrawerItem[] drawerItem = new DrawerItem[2];
+        drawerItem[0] = new DrawerItem(R.mipmap.ic_settings_white_24dp, "Settings");
+        drawerItem[1] = new DrawerItem(R.mipmap.ic_content_paste_white_24dp, "Paste auction link");
+
+        DrawerAdapter drawerAdapter = new DrawerAdapter(this, R.layout.drawer_list_item, drawerItem);
+        drawerLv.setAdapter(drawerAdapter);
+        drawerLv.setOnItemClickListener(new DrawerItemClickListener());
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close){
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                System.out.println("onDrawerClosed");
+                getSupportActionBar().setTitle("on drawable close");
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                System.out.println("on drawable opened");
+                getSupportActionBar().setTitle("on drawable opened");
+            }
+        };
+//
+//        drawerLayout.setDrawerListener(drawerToggle);
+//        getActionBar().setDisplayHomeAsUpEnabled(true);
+//        getActionBar().setHomeButtonEnabled(true);
+
+//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (drawerLayout.isDrawerVisible(Gravity.LEFT)) {
+//                    return;
+//                } else {
+//                    drawerLayout.openDrawer(Gravity.LEFT);
+//                }
+//            }
+//        });
+
+
     }
 
     @Override
@@ -211,19 +245,19 @@ public class MainActivity extends AppCompatActivity {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         String titleContextItem = auctionsAdapter.getItem(info.position).getTitle();
         String idContextItem = auctionsAdapter.getItem(info.position).getItemId();
+
         switch (item.getItemId()) {
             case R.id.delete_id:
-                auctionsJsonArr = jsonWorker.removeAuctionFromJson(auctionsJsonArr, idContextItem);
-                fileWorker.writeJsonFile(this, auctionsJsonArr.toString(), Constants.JSON_DB_NAME);
-                auctionsList.remove(info.position);
-                auctionsAdapter.notifyDataSetChanged();
-                Toast.makeText(this, titleContextItem + " removed.", Toast.LENGTH_LONG).show();
+//                auctionsJsonArr = jsonWorker.removeAuctionFromJson(auctionsJsonArr, idContextItem);
+//                fileWorker.writeJsonFile(this, auctionsJsonArr.toString(), Constants.JSON_DB_NAME);
+//                auctionsList.remove(info.position);
+//                auctionsAdapter.notifyDataSetChanged();
+//                Toast.makeText(this, titleContextItem + " removed.", Toast.LENGTH_LONG).show();
                 return true;
             default:
                 return super.onContextItemSelected(item);
 
         }
-//        return super.onContextItemSelected(item);
     }
 
     @Override
@@ -242,6 +276,10 @@ public class MainActivity extends AppCompatActivity {
             background();
             return true;
         }
+//        if(drawerToggle.onOptionsItemSelected(item)){
+//            System.out.println("test1");
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -256,8 +294,8 @@ public class MainActivity extends AppCompatActivity {
     private void background() {
 
         Intent bgIntent = new Intent(this, BackgroundService.class);
-        bgIntent.putExtra("auctionDB", auctionsJsonArr.toString());
-        System.out.println("auctionsJsonArr = " + auctionsJsonArr);
+//        bgIntent.putExtra("auctionDB", auctionsJsonArr.toString());
+//        System.out.println("auctionsJsonArr = " + auctionsJsonArr);
         PendingIntent alarmIntent = PendingIntent.getService(this, 0, bgIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60 * 1000, alarmIntent);
@@ -265,6 +303,10 @@ public class MainActivity extends AppCompatActivity {
 
         startService(bgIntent);
 
+
+    }
+
+    public static void updateList(){
 
     }
 
@@ -321,22 +363,17 @@ public class MainActivity extends AppCompatActivity {
 
         JSONObject itemJson = new JSONObject();
 
-        if (Auction.auctionExist(foundAuction.getItemId(), auctionsJsonArr)) {
+        if (Auction.auctionExist(foundAuction.getItemId())) {
             Toast.makeText(this, "This auction exist.", Toast.LENGTH_LONG).show();
         } else {
-
             try {
+                Iterator it = jItemFromPaste.keys();
 
-                Iterator it = jItem.keys();
+                //Add all data from ebay
                 while (it.hasNext()) {
-
                     String key = (String) it.next();
-                    itemJson.put(key, jItem.get(key));
-//                    Log.d(key, jItem.get(key).toString());
-
-
+                    itemJson.put(key, jItemFromPaste.get(key));
                 }
-
                 itemJson.put("SiteExtension", foundAuction.getSiteExt());
                 itemJson.put("SiteID", foundAuction.getSiteId());
                 itemJson.put("UrlJson", foundAuction.getUrlJson());
@@ -356,17 +393,20 @@ public class MainActivity extends AppCompatActivity {
                 }
                 historyArr.put(historyObj);
                 itemJson.put(Constants.HISTORY, historyArr);
-                auctionsJsonArr.put(itemJson);
+                MainActivity.auctionsJsonArr.put(itemJson);
 
-                fileWorker.writeJsonFile(this, auctionsJsonArr.toString(), Constants.JSON_DB_NAME);
+                fileWorker.writeJsonFile(this, MainActivity.auctionsJsonArr, Constants.JSON_DB_NAME);
                 loadJsonToLv();
                 clearFoundItem();
+                background();
 
             } catch (JSONException e) {
                 Log.d("jk", "saveAuction function problem: " + e.toString());
                 e.printStackTrace();
             }
         }
+        System.out.println("DB titles after save");
+        StaticWorker.showDBTitles();
     }
 
     public void closeFoundItem(View view) {
@@ -380,8 +420,6 @@ public class MainActivity extends AppCompatActivity {
         picAuctionIv.setImageResource(R.drawable.no_img);
         buyItNowTv.setText("");
         priceTv.setText("");
-//        urlTv.setText("");
-//        urlTv.setHint("Paste auction link.");
         foundLayout.setVisibility(View.GONE);
     }
 
@@ -415,7 +453,7 @@ public class MainActivity extends AppCompatActivity {
         closeInfoButtonTv = (TextView) dialog.findViewById(R.id.close_info_tv);
         infoListLayout = (LinearLayout) dialog.findViewById(R.id.info_tv_list);
         infoTitleTv = (TextView) dialog.findViewById(R.id.title_info_tv);
-        auctionCount = auctionsJsonArr.length() - 1;
+        auctionCount = MainActivity.auctionsJsonArr.length() - 1;
         checkAuction();
         closeInfoButtonTv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -428,13 +466,42 @@ public class MainActivity extends AppCompatActivity {
 
     private void checkAuction() {
         System.out.println(" checkAuctions = " + auctionCount);
-        auctionCheckNum = auctionsJsonArr.length() - auctionCount;
-        auctionMsg = "Check auction: " + String.valueOf(auctionCheckNum) + "/" + auctionsJsonArr.length();
+        auctionCheckNum = MainActivity.auctionsJsonArr.length() - auctionCount;
+        auctionMsg = "Check auction: " + String.valueOf(auctionCheckNum) + "/" + MainActivity.auctionsJsonArr.length();
         infoTitleTv.setText(auctionMsg);
         new AnalyzeAuctions().execute(auctionCount);
         auctionCount = auctionCount - 1;
     }
 
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            selectItem(position);
+        }
+
+        private void selectItem(int position){
+
+            switch (position){
+                case 0:
+                    System.out.println("Settings clicked");
+                    Intent settingsIntent = new Intent(getApplicationContext(), SettingsView.class);
+                    settingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    getApplicationContext().startActivity(settingsIntent);
+                    drawerLayout.closeDrawers();
+                    break;
+                case 1:
+                    pasteAction();
+                    drawerLayout.closeDrawers();
+                    break;
+                default:
+                    break;
+            }
+
+
+        }
+
+    }
 
     class AnalyzeAuctions extends AsyncTask<Integer, Void, Void> {
 
@@ -445,7 +512,7 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 Integer auctionNum = params[0];
-                URL urlToCheck = new URL(auctionsJsonArr.getJSONObject(auctionNum).get(Constants.URL_JSON).toString());
+                URL urlToCheck = new URL(MainActivity.auctionsJsonArr.getJSONObject(auctionNum).get(Constants.URL_JSON).toString());
                 getEbayAuctionItem(getEbayJson(urlToCheck));
                 getAppAuctionItem(auctionNum);
             } catch (IOException | JSONException e) {
@@ -529,8 +596,8 @@ public class MainActivity extends AppCompatActivity {
                 priceInfoItemTv.setText(infoPrice);
             }
 
-            AuctionWorker.updateAuctionByName(getApplicationContext(), auctionsJsonArr, idApp, statusEbay, Constants.STATUS);
-            AuctionWorker.updateAuctionByName(getApplicationContext(), auctionsJsonArr, idApp, endTimeEbay, Constants.END_TIME);
+            AuctionWorker.updateAuctionByName(getApplicationContext(), idApp, statusEbay, Constants.STATUS);
+            AuctionWorker.updateAuctionByName(getApplicationContext(), idApp, endTimeEbay, Constants.END_TIME);
             infoListLayout.addView(infoItem);
             if (auctionCount >= 0) {
                 checkAuction();
@@ -560,12 +627,12 @@ public class MainActivity extends AppCompatActivity {
         protected void getAppAuctionItem(Integer auctionNum) {
             auctionAnalyzeApp = new Auction();
             try {
-                if (auctionsJsonArr.getJSONObject(auctionNum).has(Constants.BUY_IT_NOW)) {
-                    auctionAnalyzeApp.setBuyItNow(auctionsJsonArr.getJSONObject(auctionNum).getJSONObject(Constants.BUY_IT_NOW).get(Constants.VALUE).toString());
+                if (MainActivity.auctionsJsonArr.getJSONObject(auctionNum).has(Constants.BUY_IT_NOW)) {
+                    auctionAnalyzeApp.setBuyItNow(MainActivity.auctionsJsonArr.getJSONObject(auctionNum).getJSONObject(Constants.BUY_IT_NOW).get(Constants.VALUE).toString());
                 }
-                auctionAnalyzeApp.setPrice(auctionsJsonArr.getJSONObject(auctionNum).getJSONObject(Constants.PRICE).get(Constants.VALUE).toString());
-                auctionAnalyzeApp.setItemId(auctionsJsonArr.getJSONObject(auctionNum).get(Constants.ITEM_ID).toString());
-                auctionAnalyzeApp.setCurrency(auctionsJsonArr.getJSONObject(auctionNum).getJSONObject(Constants.PRICE).get(Constants.CURRENCY).toString());
+                auctionAnalyzeApp.setPrice(MainActivity.auctionsJsonArr.getJSONObject(auctionNum).getJSONObject(Constants.PRICE).get(Constants.VALUE).toString());
+                auctionAnalyzeApp.setItemId(MainActivity.auctionsJsonArr.getJSONObject(auctionNum).get(Constants.ITEM_ID).toString());
+                auctionAnalyzeApp.setCurrency(MainActivity.auctionsJsonArr.getJSONObject(auctionNum).getJSONObject(Constants.PRICE).get(Constants.CURRENCY).toString());
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -654,15 +721,16 @@ public class MainActivity extends AppCompatActivity {
             if (foundAuction.getCurrencyPrice() != null) priceTv.setText(foundAuction.getCurrencyPrice());
             if (foundAuction.getTitle() != null) saveBtnTv.setVisibility(View.VISIBLE);
             clearBtnTv.setVisibility(View.VISIBLE);
-//            pas.setClickable(true);
+            System.out.println("Auction after paste = ");
+            StaticWorker.showDBTitles();
         }
 
         protected void getAuctionItem(String jsonString) throws JSONException {
 
             JSONObject jsonObject = new JSONObject(jsonString);
 
-            jItem = jsonObject.getJSONObject(Constants.ITEM);
-            Iterator it = jItem.keys();
+            jItemFromPaste = jsonObject.getJSONObject(Constants.ITEM);
+            Iterator it = jItemFromPaste.keys();
 
             foundAuction.setVersion(jsonObject.get(Constants.VERSION).toString());
             foundAuction.setTimestamp(jsonObject.get(Constants.TIMESTAMP).toString());
@@ -673,50 +741,50 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (key) {
                     case Constants.PRICE:
-                        foundAuction.setPrice(jItem.getJSONObject(Constants.PRICE).get(Constants.VALUE).toString());
-                        foundAuction.setCurrency(jItem.getJSONObject(Constants.PRICE).get(Constants.CURRENCY).toString());
+                        foundAuction.setPrice(jItemFromPaste.getJSONObject(Constants.PRICE).get(Constants.VALUE).toString());
+                        foundAuction.setCurrency(jItemFromPaste.getJSONObject(Constants.PRICE).get(Constants.CURRENCY).toString());
                         break;
                     case Constants.BUY_IT_NOW:
-                        foundAuction.setBuyItNow(jItem.getJSONObject(Constants.BUY_IT_NOW).get(Constants.VALUE).toString());
-                        foundAuction.setCurrency(jItem.getJSONObject(Constants.BUY_IT_NOW).get(Constants.CURRENCY).toString());
+                        foundAuction.setBuyItNow(jItemFromPaste.getJSONObject(Constants.BUY_IT_NOW).get(Constants.VALUE).toString());
+                        foundAuction.setCurrency(jItemFromPaste.getJSONObject(Constants.BUY_IT_NOW).get(Constants.CURRENCY).toString());
                         break;
                     case Constants.PICTURE_URL:
-                        if (jItem.getJSONArray(Constants.PICTURE_URL).length() > 0) {
-                            foundAuction.setPicture(jItem.getJSONArray(Constants.PICTURE_URL).getString(0));
+                        if (jItemFromPaste.getJSONArray(Constants.PICTURE_URL).length() > 0) {
+                            foundAuction.setPicture(jItemFromPaste.getJSONArray(Constants.PICTURE_URL).getString(0));
                             new GetAuctionPic().execute(foundAuction.getPicture());
                         } else {
                             foundAuction.setPicture("");
                         }
                         break;
                     case Constants.TITLE:
-                        foundAuction.setTitle(jItem.get(Constants.TITLE).toString());
+                        foundAuction.setTitle(jItemFromPaste.get(Constants.TITLE).toString());
                         break;
                     case Constants.ITEM_ID:
-                        foundAuction.setItemId(jItem.get(Constants.ITEM_ID).toString());
+                        foundAuction.setItemId(jItemFromPaste.get(Constants.ITEM_ID).toString());
                         break;
                     case Constants.END_TIME:
-                        foundAuction.setEndTime(jItem.get(Constants.END_TIME).toString());
+                        foundAuction.setEndTime(jItemFromPaste.get(Constants.END_TIME).toString());
                         break;
                     case Constants.AUCTION_URL:
-                        foundAuction.setUrl(jItem.get(Constants.AUCTION_URL).toString());
+                        foundAuction.setUrl(jItemFromPaste.get(Constants.AUCTION_URL).toString());
                         break;
                     case Constants.LISTING_TYPE:
-                        foundAuction.setListingType(jItem.get(Constants.LISTING_TYPE).toString());
+                        foundAuction.setListingType(jItemFromPaste.get(Constants.LISTING_TYPE).toString());
                         break;
                     case Constants.LOCATION:
-                        foundAuction.setLocation(jItem.get(Constants.LOCATION).toString());
+                        foundAuction.setLocation(jItemFromPaste.get(Constants.LOCATION).toString());
                         break;
                     case Constants.CATEGORY:
-                        foundAuction.setCategory(jItem.get(Constants.CATEGORY).toString());
+                        foundAuction.setCategory(jItemFromPaste.get(Constants.CATEGORY).toString());
                         break;
                     case Constants.CATEGORY_ID:
-                        foundAuction.setCategoryId(jItem.get(Constants.CATEGORY_ID).toString());
+                        foundAuction.setCategoryId(jItemFromPaste.get(Constants.CATEGORY_ID).toString());
                         break;
                     case Constants.STATUS:
-                        foundAuction.setStatus(jItem.get(Constants.STATUS).toString());
+                        foundAuction.setStatus(jItemFromPaste.get(Constants.STATUS).toString());
                         break;
                     case Constants.COUNTRY:
-                        foundAuction.setLocation(jItem.get(Constants.COUNTRY).toString());
+                        foundAuction.setLocation(jItemFromPaste.get(Constants.COUNTRY).toString());
                         break;
                 }
             }

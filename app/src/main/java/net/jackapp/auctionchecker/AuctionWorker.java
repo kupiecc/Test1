@@ -24,6 +24,7 @@ public class AuctionWorker {
 
     private static FileWorker fileWorker = new FileWorker();
 
+
     public static String getJsonData(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         InputStream in = new BufferedInputStream(urlConnection.getInputStream());
@@ -46,20 +47,22 @@ public class AuctionWorker {
     }
 
 
-    public static void updateAuctionByName(Context context, JSONArray jsonArray, String id, String value, String name) {
-        for (int i = 0; i < jsonArray.length(); i++) {
+    public static void updateAuctionByName(Context context, String id, String value, String name) {
+        System.out.println(" updateAuctionByName ");
+        for (int i = 0; i < MainActivity.auctionsJsonArr.length(); i++) {
             try {
-                if (jsonArray.getJSONObject(i).get(Constants.ITEM_ID).toString() == id) {
+                if (MainActivity.auctionsJsonArr.getJSONObject(i).get(Constants.ITEM_ID).toString().equals(id)) {
+                    System.out.println("id= " + MainActivity.auctionsJsonArr.getJSONObject(i).get(Constants.ITEM_ID).toString());
                     switch (name) {
                         case Constants.STATUS:
-                            jsonArray.getJSONObject(i).put(Constants.STATUS, value);
-                            jsonArray.getJSONObject(i).put(Constants.UPDATED_AT, getNowDate());
-                            fileWorker.writeJsonFile(context, jsonArray.toString(), Constants.JSON_DB_NAME);
+                            MainActivity.auctionsJsonArr.getJSONObject(i).put(Constants.STATUS, value);
+                            MainActivity.auctionsJsonArr.getJSONObject(i).put(Constants.UPDATED_AT, getNowDate());
+                            fileWorker.writeJsonFile(context, MainActivity.auctionsJsonArr, Constants.JSON_DB_NAME);
                             break;
                         case Constants.END_TIME:
-                            jsonArray.getJSONObject(i).put(Constants.END_TIME, value);
-                            jsonArray.getJSONObject(i).put(Constants.UPDATED_AT, getNowDate());
-                            fileWorker.writeJsonFile(context, jsonArray.toString(), Constants.JSON_DB_NAME);
+                            MainActivity.auctionsJsonArr.getJSONObject(i).put(Constants.END_TIME, value);
+                            MainActivity.auctionsJsonArr.getJSONObject(i).put(Constants.UPDATED_AT, getNowDate());
+                            fileWorker.writeJsonFile(context, MainActivity.auctionsJsonArr, Constants.JSON_DB_NAME);
                             break;
                     }
                 }
@@ -69,22 +72,21 @@ public class AuctionWorker {
         }
     }
 
-    public static void updateAuctionPriceAndBuy(Context context, JSONArray jsonArray, String id, Double price, Double buyItNow) {
-        for (int i = 0; i < jsonArray.length(); i++) {
+    public static void updateAuctionPriceAndBuy(Context context, String id, Double price, Double buyItNow) {
+        for (int i = 0; i < MainActivity.auctionsJsonArr.length(); i++) {
             try {
-                if (jsonArray.getJSONObject(i).get(Constants.ITEM_ID).toString().equals(id)) {
-
-
+                System.out.println("id = " + MainActivity.auctionsJsonArr.getJSONObject(i).get(Constants.ITEM_ID));
+                if (MainActivity.auctionsJsonArr.getJSONObject(i).get(Constants.ITEM_ID).toString().equals(id)) {
                     JSONObject historyObj = new JSONObject();
                     historyObj.put(Constants.HISTORY_PRICE, price);
                     historyObj.put(Constants.HISTORY_DATE, getNowDate());
                     historyObj.put(Constants.HISTORY_BUY_IT_NOW, buyItNow);
+                    MainActivity.auctionsJsonArr.getJSONObject(i).getJSONArray(Constants.HISTORY).put(historyObj);
+                    MainActivity.auctionsJsonArr.getJSONObject(i).put(Constants.UPDATED_AT, getNowDate());
+                    MainActivity.auctionsJsonArr.getJSONObject(i).getJSONObject(Constants.BUY_IT_NOW).put(Constants.VALUE, buyItNow);
+                    MainActivity.auctionsJsonArr.getJSONObject(i).getJSONObject(Constants.PRICE).put(Constants.VALUE, price);
 
-                    jsonArray.getJSONObject(i).getJSONArray(Constants.HISTORY).put(historyObj);
-                    jsonArray.getJSONObject(i).put(Constants.UPDATED_AT, getNowDate());
-                    jsonArray.getJSONObject(i).getJSONObject(Constants.BUY_IT_NOW).put(Constants.VALUE, buyItNow);
-                    jsonArray.getJSONObject(i).getJSONObject(Constants.PRICE).put(Constants.VALUE, price);
-                    fileWorker.writeJsonFile(context, jsonArray.toString(), Constants.JSON_DB_NAME);
+                    fileWorker.writeJsonFile(context, MainActivity.auctionsJsonArr, Constants.JSON_DB_NAME);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -92,35 +94,49 @@ public class AuctionWorker {
         }
     }
 
-    public static void updateAuctionPrice(Context context, JSONArray jsonArray, String id, Double value, String name) {
+    public static void updateAuctionPrice(Context context, String id, Double value, String name) {
 
-        for (int i = 0; i < jsonArray.length(); i++) {
+        for (int i = 0; i < MainActivity.auctionsJsonArr.length(); i++) {
             try {
-                if (jsonArray.getJSONObject(i).get(Constants.ITEM_ID).toString().equals(id)) {
-                    System.out.println("updateAuctionPrice itemId = " + jsonArray.getJSONObject(i).get(Constants.ITEM_ID) + "; id = " + id + "; new value = " + value + "; name: " + name);
+                if (MainActivity.auctionsJsonArr.getJSONObject(i).get(Constants.ITEM_ID).toString().equals(id)) {
+                    System.out.println("updateAuctionPrice itemId = " + MainActivity.auctionsJsonArr.getJSONObject(i).get(Constants.ITEM_ID) + "; id = " + id + "; new value = " + value + "; name: " + name);
                     JSONObject historyObj = new JSONObject();
                     switch (name) {
                         case Constants.BUY_IT_NOW:
-                            jsonArray.getJSONObject(i).getJSONObject(Constants.BUY_IT_NOW).put(Constants.VALUE, value);
+                            MainActivity.auctionsJsonArr.getJSONObject(i).getJSONObject(Constants.BUY_IT_NOW).put(Constants.VALUE, value);
                             historyObj.put(Constants.HISTORY_BUY_IT_NOW, value);
                             historyObj.put(Constants.HISTORY_DATE, getNowDate());
-                            jsonArray.getJSONObject(i).getJSONArray(Constants.HISTORY).put(historyObj);
+                            MainActivity.auctionsJsonArr.getJSONObject(i).getJSONArray(Constants.HISTORY).put(historyObj);
                             break;
                         case Constants.PRICE:
-                            jsonArray.getJSONObject(i).getJSONObject(Constants.PRICE).put(Constants.VALUE, value);
+                            MainActivity.auctionsJsonArr.getJSONObject(i).getJSONObject(Constants.PRICE).put(Constants.VALUE, value);
                             historyObj.put(Constants.HISTORY_PRICE, value);
                             historyObj.put(Constants.HISTORY_DATE, getNowDate());
-                            jsonArray.getJSONObject(i).getJSONArray(Constants.HISTORY).put(historyObj);
+                            MainActivity.auctionsJsonArr.getJSONObject(i).getJSONArray(Constants.HISTORY).put(historyObj);
                             break;
                     }
-                    jsonArray.getJSONObject(i).put(Constants.UPDATED_AT, getNowDate());
-                    fileWorker.writeJsonFile(context, jsonArray.toString(), Constants.JSON_DB_NAME);
+                    MainActivity.auctionsJsonArr.getJSONObject(i).put(Constants.UPDATED_AT, getNowDate());
+                    fileWorker.writeJsonFile(context, MainActivity.auctionsJsonArr, Constants.JSON_DB_NAME);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
+    }
 
+    public static void removeAuction(Context context, String id) {
+        JSONArray newJsonArray = new JSONArray();
+        for (int i = 0; i < MainActivity.auctionsJsonArr.length(); i++) {
+            try {
+                if (!MainActivity.auctionsJsonArr.getJSONObject(i).get(Constants.ITEM_ID).toString().equals(id)) {
+                    newJsonArray.put(MainActivity.auctionsJsonArr.getJSONObject(i));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        MainActivity.auctionsJsonArr = newJsonArray;
+        fileWorker.writeJsonFile(context, newJsonArray, Constants.JSON_DB_NAME);
     }
 
 }

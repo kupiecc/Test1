@@ -2,287 +2,266 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ddd"
+    android:background="@color/colorGrayLight"
     android:orientation="vertical">
 
-    <android.support.v7.widget.CardView
+    <RelativeLayout
+        android:id="@+id/title_layout_view"
         android:layout_width="match_parent"
-        android:padding="20dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        android:elevation="4dp"
+        android:layout_height="wrap_content"
+        android:background="@color/colorWhite">
+
+        <net.jackapp.auctionchecker.CaviarTV
+            android:id="@+id/title_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="3"
+            android:padding="15dp"
+            android:text="Test"
+            android:textColor="@color/colorButtonTxtDark"
+            android:textSize="15dp" />
+    </RelativeLayout>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/picture_view_bg"
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:scaleType="fitXY"
-                android:adjustViewBounds="true"
-                android:src="@drawable/no_img" />
+                android:layout_margin="15dp">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/black_glass">
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:id="@+id/title_layout_view"
-                android:background="#7000"
-                android:layout_marginBottom="15dp"
-                android:layout_height="wrap_content">
-
-                <net.jackapp.auctionchecker.CaviarTV
-                    android:id="@+id/title_view"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:maxLines="3"
-                    android:text="Test"
-                    android:padding="5dp"
-                    android:layout_margin="5dp"
-                    android:textColor="@color/colorButtonTxtLight"
-                    android:textSize="15dp" />
-            </RelativeLayout>
+                    android:layout_height="match_parent"
+                    android:minHeight="120dp"
+                    android:orientation="horizontal">
 
-            <ScrollView
-                android:layout_below="@id/title_layout_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                    <ImageView
+                        android:id="@+id/picture_view"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="10dp"
+                        android:adjustViewBounds="true"
+                        android:elevation="4dp"
+                        android:src="@drawable/no_img" />
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
 
-                    <RelativeLayout
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:paddingLeft="10dp"
-                        android:id="@+id/main_layout_view"
-                        android:paddingRight="10dp">
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-                        <ImageView
-                            android:id="@+id/picture_view"
+                        <net.jackapp.auctionchecker.CaviarTV
+                            android:id="@+id/price_view_lbl"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_centerHorizontal="true"
-                            android:adjustViewBounds="true"
-                            android:src="@drawable/no_img" />
+                            android:text="Price :"
+                            android:textColor="@color/colorTxtLight"
+                            android:textSize="12dp" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                        <net.jackapp.auctionchecker.CaviarTV
+                            android:id="@+id/price_view"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:layout_below="@id/picture_view"
-                            android:layout_marginTop="10dp"
-                            android:background="#7000"
-                            android:padding="10dp">
+                            android:layout_marginBottom="5dp"
+                            android:ellipsize="end"
+                            android:lines="1"
+                            android:text="31 456.99 PLN"
+                            android:textColor="@color/colorAccentDark"
+                            android:textSize="18dp" />
 
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
+                        <net.jackapp.auctionchecker.CaviarTV
+                            android:id="@+id/buy_it_now_view_lbl"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Buy It Now:"
+                            android:textColor="@color/colorTxtLight"
+                            android:textSize="12dp" />
 
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_alignParentRight="true"
-                                    android:orientation="vertical">
+                        <net.jackapp.auctionchecker.CaviarTV
+                            android:id="@+id/buy_it_now_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="5dp"
+                            android:ellipsize="end"
+                            android:lines="1"
+                            android:text="34 456.99 PLN"
+                            android:textColor="@color/colorAccentDark"
+                            android:textSize="18dp" />
 
-                                    <TextView
-                                        android:id="@+id/buy_it_now_view_lbl"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Buy It Now:"
-                                        android:textColor="#aaa"
-                                        android:textSize="12dp"
-                                        android:visibility="gone"/>
+                        <net.jackapp.auctionchecker.CaviarTV
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="3dp"
+                            android:text="End time:"
+                            android:textColor="@color/colorTxtLight"
+                            android:textSize="10dp" />
 
-                                    <net.jackapp.auctionchecker.CaviarTV
-                                        android:id="@+id/buy_it_now_view"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginBottom="5dp"
-                                        android:text="34 456.99 PLN"
-                                        android:textColor="#fff"
-                                        android:textSize="18dp"
-                                        android:visibility="gone"/>
-                                </LinearLayout>
+                        <net.jackapp.auctionchecker.CaviarTV
+                            android:id="@+id/end_time_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="2000-01-01 00:00:01"
+                            android:textColor="@color/colorTxtDark"
+                            android:textSize="12dp" />
 
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="vertical">
-
-                                    <TextView
-                                        android:id="@+id/price_view_lbl"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Price :"
-                                        android:textColor="#aaa"
-                                        android:textSize="12dp" />
-
-                                    <net.jackapp.auctionchecker.CaviarTV
-                                        android:id="@+id/price_view"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginBottom="5dp"
-                                        android:text="31 456.99 PLN"
-                                        android:textColor="#fff"
-                                        android:textSize="18dp" />
-                                </LinearLayout>
-                            </RelativeLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:layout_margin="10dp"
-                                android:orientation="horizontal">
-
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_marginRight="10dp"
-                                    android:layout_height="match_parent">
-
-                                    <net.jackapp.auctionchecker.CaviarTV
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="End time:"
-                                        android:textColor="#aaa"
-                                        android:layout_marginRight="3dp"
-                                        android:textSize="10dp" />
-
-                                    <net.jackapp.auctionchecker.CaviarTV
-                                        android:id="@+id/end_time_view"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="2000-01-01 00:00:01"
-                                        android:textColor="#fff"
-                                        android:textSize="12dp" />
-                                </LinearLayout>
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_marginRight="10dp"
-                                    android:gravity="center"
-                                    android:layout_height="match_parent">
-                                        <net.jackapp.auctionchecker.CaviarTV
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:text="Active:"
-                                            android:layout_marginRight="3dp"
-                                            android:textColor="#aaa"
-                                            android:textSize="10dp" />
-
-                                        <ImageView
-                                            android:id="@+id/active_view"
-                                            android:layout_width="9dp"
-                                            android:layout_height="9dp"
-                                            android:src="@drawable/red_dot" />
-
-                                </LinearLayout>
-
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="match_parent"
-                                    android:gravity="center"
-                                    android:layout_alignParentRight="true">
-
-                                    <net.jackapp.auctionchecker.CaviarTV
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Country: "
-                                        android:textColor="#aaa"
-                                        android:textSize="10dp" />
-
-                                    <net.jackapp.auctionchecker.CaviarTV
-                                        android:id="@+id/country_view"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="PL"
-                                        android:textColor="#fff"
-                                        android:textSize="10dp" />
-                                </LinearLayout>
-
-
-
-                            </LinearLayout>
-
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
-
-                                <net.jackapp.auctionchecker.CaviarTV
-                                    android:id="@+id/url_view"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:ellipsize="end"
-                                    android:lines="1"
-                                    android:padding="10dp"
-                                    android:text="www"
-                                    android:textColor="#fff"
-                                    android:textSize="10dp" />
-
-                            </RelativeLayout>
-
-                        </LinearLayout>
-
-                    </RelativeLayout>
+                    </LinearLayout>
 
                     <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_below="@id/main_layout_view"
-                        android:background="#7000"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_height="match_parent">
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:background="@color/colorPrimary"
+                        android:minHeight="120dp"
+                        android:orientation="vertical">
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:id="@+id/history_list_view_layout"
-                            android:orientation="vertical">
+                        <ImageView
+                            android:id="@+id/active_view"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="10dp"
+                            android:padding="7dp"
+                            android:src="@drawable/red_dot" />
 
-                            <ListView
-                                android:id="@+id/history_list_view"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"></ListView>
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:src="@mipmap/ic_language_white_24dp" />
 
-                        </LinearLayout>
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginBottom="10dp"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:src="@mipmap/ic_delete_white_24dp" />
+
                     </RelativeLayout>
-                </RelativeLayout>
-            </ScrollView>
 
-        </RelativeLayout>
+                </LinearLayout>
 
 
-        <RelativeLayout
+            </android.support.v7.widget.CardView>
 
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:layout_width="wrap_content"
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@mipmap/ic_delete_white_48dp" />
-        </RelativeLayout>
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp">
 
-    </LinearLayout>
-    </android.support.v7.widget.CardView>
+                <LinearLayout
+                    android:id="@+id/history_list_view_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:orientation="vertical">
+
+                    <ListView
+                        android:id="@+id/history_list_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"></ListView>
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+    <!--<android.support.v7.widget.CardView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:layout_marginLeft="10dp"-->
+    <!--android:layout_marginRight="10dp"-->
+    <!--android:layout_marginTop="10dp"-->
+    <!--android:elevation="4dp"-->
+    <!--android:padding="20dp">-->
+
+    <!--<LinearLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:background="@color/colorGrayLight"-->
+    <!--android:orientation="vertical">-->
+
+
+    <!--<RelativeLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content">-->
+
+
+    <!--<ScrollView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent">-->
+
+    <!--<RelativeLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent">-->
+
+    <!--<RelativeLayout-->
+    <!--android:id="@+id/main_layout_view"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:background="@color/colorWhite"-->
+    <!--android:orientation="vertical"-->
+    <!--android:paddingLeft="10dp"-->
+    <!--android:paddingRight="10dp">-->
+
+
+    <!--</RelativeLayout>-->
+
+    <!--<RelativeLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:layout_below="@id/main_layout_view"-->
+    <!--android:layout_marginLeft="10dp"-->
+    <!--android:layout_marginRight="10dp"-->
+    <!--android:background="#7000">-->
+
+    <!--<LinearLayout-->
+    <!--android:id="@+id/history_list_view_layout"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:orientation="vertical">-->
+
+    <!--</LinearLayout>-->
+    <!--</RelativeLayout>-->
+    <!--</RelativeLayout>-->
+    <!--</ScrollView>-->
+
+    <!--</RelativeLayout>-->
+
+
+    <!--<RelativeLayout-->
+
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content">-->
+
+    <!--<ImageView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:src="@mipmap/ic_delete_white_48dp" />-->
+    <!--</RelativeLayout>-->
+
+    <!--</LinearLayout>-->
+    <!--</android.support.v7.widget.CardView>-->
 
 
 </LinearLayout>

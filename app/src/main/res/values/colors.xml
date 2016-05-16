@@ -20,4 +20,10 @@
     <color name="colorButtonBg">#E3F2FD</color>
     <color name="colorTopBarBg">#2a2a2a</color>
     <color name="colorTopBar">#fafafa</color>
+    <color name="colorGrayLight">#ddd</color>
+    <color name="colorWhite">#fff</color>
+    <color name="colorTxtLight">#9a9a9a</color>
+    <color name="colorTxtDark">#252525</color>
+
+
 </resources>

@@ -38,7 +38,7 @@ public class JsonWorker {
         JSONArray newDb = new JSONArray();
         for (int i = 0; i < db.length(); i++) {
             try {
-                if (db.getJSONObject(i).getString(ITEM_ID) != auctionID) {
+                if (db.getJSONObject(i).getString(Constants.ITEM_ID) != auctionID) {
                     newDb.put(db.getJSONObject(i));
                 }
             } catch (JSONException e) {

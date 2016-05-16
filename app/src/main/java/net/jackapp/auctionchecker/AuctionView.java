@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -27,7 +26,8 @@ import java.net.URL;
  */
 public class AuctionView extends Activity {
 
-    TextView buyItNowTv, priceTv, buyItNowLblTv, priceLblTv, urlTv, endTimeTv, countryTv, titleTv;
+    TextView buyItNowTv, priceTv, buyItNowLblTv, priceLblTv, endTimeTv,
+            titleTv;
     ImageView pictureIv, pictureIvBg, activeIv;
     ListView historyList;
     LinearLayout historyListLayout, historyRowLayout;
@@ -46,6 +46,7 @@ public class AuctionView extends Activity {
         setContentView(R.layout.auction_view);
         auction = getIntent().getParcelableExtra("auctionToView");
         historyString = getIntent().getStringExtra("history");
+        System.out.println("historyString = " + historyString);
         try {
             historyArray = new JSONArray(historyString);
         } catch (JSONException e) {
@@ -62,12 +63,12 @@ public class AuctionView extends Activity {
         buyItNowTv = (TextView) findViewById(R.id.buy_it_now_view);
         priceTv = (TextView) findViewById(R.id.price_view);
         priceLblTv = (TextView) findViewById(R.id.price_view_lbl);
-        urlTv = (TextView) findViewById(R.id.url_view);
+//        urlTv = (TextView) findViewById(R.id.url_view);
         endTimeTv = (TextView) findViewById(R.id.end_time_view);
         activeIv = (ImageView) findViewById(R.id.active_view);
-        countryTv = (TextView) findViewById(R.id.country_view);
+//        countryTv = (TextView) findViewById(R.id.country_view);
         pictureIv = (ImageView) findViewById(R.id.picture_view);
-        pictureIvBg = (ImageView) findViewById(R.id.picture_view_bg);
+//        pictureIvBg = (ImageView) findViewById(R.id.picture_view_bg);
         titleTv = (TextView) findViewById(R.id.title_view);
         historyList = (ListView) findViewById(R.id.history_list_view);
         historyListLayout = (LinearLayout) findViewById(R.id.history_list_view_layout);
@@ -80,7 +81,7 @@ public class AuctionView extends Activity {
         buyItNowTv.setText(auction.getCurrencyBuyItNow());
         priceTv.setText(auction.getCurrencyPrice());
         endTimeTv.setText(auction.getEndDateTime());
-        countryTv.setText(auction.getCountry());
+//        countryTv.setText(auction.getCountry());
         titleTv.setText(auction.getTitle());
 
         if (buyItNowTv.getText().equals("-")) {
@@ -99,16 +100,15 @@ public class AuctionView extends Activity {
             activeIv.setImageResource(R.drawable.red_dot);
         }
 
-        urlTv.setText(auction.getUrl());
-        urlTv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent auctionSiteIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(auction.getUrl()));
-                startActivity(auctionSiteIntent);
-            }
-        });
+//        urlTv.setText(auction.getUrl());
+//        urlTv.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent auctionSiteIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(auction.getUrl()));
+//                startActivity(auctionSiteIntent);
+//            }
+//        });
 
-        System.out.println("historyArray = " + historyArray);
         HistoryAdapter historyAdapter = new HistoryAdapter(getApplicationContext(), historyArray, auction.getCurrency());
         historyList.setAdapter(historyAdapter);
         int historyCount = historyAdapter.getCount();
@@ -148,15 +148,15 @@ public class AuctionView extends Activity {
             super.onPostExecute(pic);
 
             if (pic != null) {
-                assert pictureIvBg != null;
-                pictureIvBg.setImageBitmap(pic);
+//                assert pictureIvBg != null;
+//                pictureIvBg.setImageBitmap(pic);
 
                 assert pictureIv != null;
                 pictureIv.setImageBitmap(pic);
 
             } else {
                 pictureIv.setImageResource(R.drawable.no_img);
-                pictureIvBg.setImageResource(R.drawable.no_img);
+//                pictureIvBg.setImageResource(R.drawable.no_img);
             }
         }
     }

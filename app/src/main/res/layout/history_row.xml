@@ -5,38 +5,100 @@
     android:id="@+id/history_row_layout"
     android:layout_height="wrap_content">
 
-    <net.jackapp.auctionchecker.CaviarTV
-        android:id="@+id/history_row_date"
-        android:textSize="10dp"
-        android:text="2016-04-23, 12:16"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <!--<net.jackapp.auctionchecker.CaviarTV-->
-        <!--android:id="@+id/history_row_price"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:textColor="#fff"-->
-        <!--android:layout_marginLeft="10dp"-->
-        <!--android:text="Bid: 450.00PLN"/>-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <net.jackapp.auctionchecker.CaviarTV
-            android:id="@+id/history_row_price"
-            android:textColor="#fff"
-            android:layout_marginLeft="10dp"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Price : xx450.00PLN"/>
-        <net.jackapp.auctionchecker.CaviarTV
-            android:id="@+id/history_row_buy_it_now"
-            android:textColor="#fff"
-            android:layout_width="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_height="wrap_content"
-            android:text="Buy It Now: xx450.00PLN"/>
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_marginBottom="2dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <net.jackapp.auctionchecker.CaviarTV
+                    android:id="@+id/history_row_day"
+                    android:textSize="24dp"
+                    android:layout_marginTop="5dp"
+                    android:text="00"
+                    android:layout_width="wrap_content"
+                    android:textColor="@color/colorTxtLight"
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_margin="2dp"
+                    android:layout_gravity="center|bottom"
+                    android:layout_height="wrap_content">
+
+                    <net.jackapp.auctionchecker.CaviarTV
+                        android:id="@+id/history_row_month"
+                        android:textSize="12dp"
+                        android:text="January1"
+                        android:layout_gravity="center|bottom"
+                        android:layout_width="wrap_content"
+                        android:textColor="@color/colorTxtLight"
+                        android:layout_height="wrap_content" />
+                    <net.jackapp.auctionchecker.CaviarTV
+                        android:id="@+id/history_row_year"
+                        android:textSize="12dp"
+                        android:text="2000"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:textColor="@color/colorTxtLight"
+                        android:layout_height="wrap_content" />
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content">
+                <net.jackapp.auctionchecker.CaviarTV
+                    android:id="@+id/history_row_time"
+                    android:textSize="16dp"
+                    android:text="24:00"
+                    android:layout_width="wrap_content"
+                    android:textColor="@color/colorTxtLight"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_marginTop="5dp"
+            android:layout_height="wrap_content">
+
+            <net.jackapp.auctionchecker.CaviarTV
+                android:id="@+id/history_row_price"
+                android:textColor="@color/colorTxtDark"
+                android:layout_marginLeft="10dp"
+                android:textSize="18dp"
+                android:layout_marginBottom="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Price : xx450.00PLN"/>
+            <net.jackapp.auctionchecker.CaviarTV
+                android:id="@+id/history_row_buy_it_now"
+                android:textColor="@color/colorTxtDark"
+                android:layout_width="wrap_content"
+                android:textSize="18dp"
+                android:layout_marginLeft="10dp"
+                android:layout_height="wrap_content"
+                android:text="Buy It Now: xx450.00PLN"/>
+        </LinearLayout>
     </LinearLayout>
+
 
 </LinearLayout>

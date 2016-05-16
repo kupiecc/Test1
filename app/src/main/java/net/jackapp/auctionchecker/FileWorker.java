@@ -5,6 +5,7 @@ import android.content.res.AssetManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.BufferedInputStream;
@@ -39,7 +40,7 @@ public class FileWorker {
 
     }
 
-    public void writeJsonFile(Context context, String jsonToSaveString, String jsonFileName) {
+    public void writeJsonFile(Context context, JSONArray jsonArray, String jsonFileName) {
 
         File jsonFile = new File(context.getApplicationContext().getFilesDir(), jsonFileName);
 //        String jsonToSaveString = jsonToSave;
@@ -49,7 +50,7 @@ public class FileWorker {
                 jsonFile.createNewFile();
             }
             os = context.openFileOutput(jsonFileName, Context.MODE_PRIVATE);
-            os.write(jsonToSaveString.getBytes());
+            os.write(jsonArray.toString().getBytes());
             os.close();
 //            Toast.makeText(context.getApplicationContext(), "Auction saved", Toast.LENGTH_LONG).show();
         } catch (IOException e) {

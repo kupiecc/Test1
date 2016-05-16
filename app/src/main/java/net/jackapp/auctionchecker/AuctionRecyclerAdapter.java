@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import org.json.JSONArray;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -29,6 +31,7 @@ public class AuctionRecyclerAdapter extends RecyclerView.Adapter<AuctionRecycler
 
     private String[] mDataset;
     private ArrayList<Auction> auctions;
+    private JSONArray jsonArray;
     private boolean isSmall = true;
 
     private Context context;
@@ -37,7 +40,7 @@ public class AuctionRecyclerAdapter extends RecyclerView.Adapter<AuctionRecycler
         private Button urlBtn, historyBtn;
         private CaviarTV titleTv, endTimeTv, urlTv;
         private CaviarTV buyItNowTv, priceTv;
-        private ImageView pictureIv, activeIv;
+        private ImageView pictureIv, activeIv, deleteIv;
         private Bitmap picBmp;
         private CardView cardView;
 
@@ -54,15 +57,16 @@ public class AuctionRecyclerAdapter extends RecyclerView.Adapter<AuctionRecycler
             pictureIv = (ImageView) row_view.findViewById(R.id.picture_row);
             activeIv = (ImageView) row_view.findViewById(R.id.active_row);
             cardView = (CardView) row_view.findViewById(R.id.card_view_row);
+            deleteIv = (ImageView) row_view.findViewById(R.id.delete_row);
             priceTv.setVisibility(View.VISIBLE);
         }
+
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
     public AuctionRecyclerAdapter(Context context, ArrayList<Auction> auctions) {
         this.context = context;
         this.auctions = auctions;
-
     }
 
     // Create new views (invoked by the layout manager)
@@ -78,18 +82,19 @@ public class AuctionRecyclerAdapter extends RecyclerView.Adapter<AuctionRecycler
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-        Auction auction = auctions.get(position);
+
+        final Auction auction = auctions.get(position);
+
         holder.titleTv.setText(auction.getTitle());
         holder.endTimeTv.setText(auction.getEndDateTime());
         holder.urlTv.setText(auction.getUrl());
 
-        holder.cardView.setOnClickListener(new View.OnClickListener() {
+        //Animation after click item on main listView
+        holder.pictureIv.setOnClickListener(new View.OnClickListener() {
             int lhHigh = 168;
-            int lhLow = 75;
-            int imgHigh = lhHigh - 8;
-            int imgLow = lhLow - 4;
+            int lhLow = 95;
+            int imgHigh = lhHigh - 10;
+            int imgLow = lhLow - 10;
             float alpha = 1;
             int lhDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, lhHigh, context.getResources().getDisplayMetrics());
             int imgWHDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, imgHigh, context.getResources().getDisplayMetrics());
@@ -98,7 +103,7 @@ public class AuctionRecyclerAdapter extends RecyclerView.Adapter<AuctionRecycler
             @Override
             public void onClick(final View v) {
 
-                if(v.getMeasuredHeight() == (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, lhHigh, context.getResources().getDisplayMetrics())){
+                if(holder.cardView.getMeasuredHeight() == (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, lhHigh, context.getResources().getDisplayMetrics())){
                     lhDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, lhLow, context.getResources().getDisplayMetrics());
                     imgWHDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, imgLow, context.getResources().getDisplayMetrics());
                     alpha = 0;
@@ -136,15 +141,16 @@ public class AuctionRecyclerAdapter extends RecyclerView.Adapter<AuctionRecycler
                     @Override
                     public void onAnimationUpdate(ValueAnimator animation) {
                         int val = (Integer) animation.getAnimatedValue();
-                        ViewGroup.LayoutParams lp = v.getLayoutParams();
+                        ViewGroup.LayoutParams lp = holder.cardView.getLayoutParams();
                         lp.height = val;
-                        v.setLayoutParams(lp);
+                        holder.cardView.setLayoutParams(lp);
                     }
                 });
                 anim.start();
             }
         });
 
+        //Get www in browser
         holder.urlBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,7 +159,8 @@ public class AuctionRecyclerAdapter extends RecyclerView.Adapter<AuctionRecycler
             }
         });
 
-        holder.historyBtn.setOnClickListener(new View.OnClickListener() {
+        //Get item view
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent showItemIntent = new Intent(context, AuctionView.class);
@@ -162,6 +169,17 @@ public class AuctionRecyclerAdapter extends RecyclerView.Adapter<AuctionRecycler
                 showItemIntent.putExtra("history", auctionToView.getHistoryString());
                 context.startActivity(showItemIntent);
                 System.out.println("v.toString() = " + auctionToView.getTitle());
+            }
+        });
+
+        holder.deleteIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AuctionWorker.removeAuction(context, auction.getItemId());
+                auctions.remove(position);
+                notifyDataSetChanged();
+                System.out.println("Auctions afrer delete ");
+                StaticWorker.showDBTitles();
             }
         });
 

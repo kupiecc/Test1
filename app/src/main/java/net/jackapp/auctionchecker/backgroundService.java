@@ -4,7 +4,6 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,7 +17,7 @@ import java.util.Iterator;
  */
 public class BackgroundService extends IntentService {
 
-    JSONArray jsonArrBg;
+    //    JSONArray jsonArrBg;
     Auction ebayAuction;
 
     public BackgroundService() {
@@ -36,53 +35,59 @@ public class BackgroundService extends IntentService {
         Double dbBuyItNow;
         String ebayPriceString;
         String dbPriceString;
+        String dbStatus;
+        String ebayStatus;
 
         DecimalFormat decimalFormat;
         decimalFormat = new DecimalFormat("#.00");
         decimalFormat.setMaximumFractionDigits(2);
 
 
-        String jsonDBString = workIntent.getStringExtra("auctionDB");
-        try {
-            if (jsonDBString != null) {
-                jsonArrBg = new JSONArray(jsonDBString);
-            }
+        if (MainActivity.auctionsJsonArr != null) {
+            for (int i = 0; i < MainActivity.auctionsJsonArr.length(); i++) {
+                try {
+                    JSONObject jsonRow = MainActivity.auctionsJsonArr.getJSONObject(i);
+                    URL urlToCheckBg = new URL(jsonRow.getString(Constants.URL_JSON));
+                    analyzeEbay(AuctionWorker.getJsonData(urlToCheckBg));
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        for (int i = 0; i < jsonArrBg.length(); i++) {
-            try {
-                JSONObject jsonRow = jsonArrBg.getJSONObject(i);
-                URL urlToCheckBg = new URL(jsonRow.getString(Constants.URL_JSON));
-                analyzeEbay(AuctionWorker.getJsonData(urlToCheckBg));
-
-                dbPriceString = jsonRow.getJSONObject(Constants.PRICE).getString(Constants.VALUE);
-                ebayPriceString = ebayAuction.getPrice();
-                dbPrice = Double.parseDouble(dbPriceString);
-                ebayPrice = Double.parseDouble(ebayPriceString);
-                String title = jsonRow.getString(Constants.TITLE).substring(0, 20);
-
-
-                if (ebayAuction.getBuyItNow() != null && jsonRow.has(Constants.BUY_IT_NOW)) {
-                    ebayBuyItNow = Double.parseDouble(ebayAuction.getBuyItNow());
-                    dbBuyItNow = Double.parseDouble(jsonRow.getJSONObject(Constants.BUY_IT_NOW).getString(Constants.VALUE));
-                    if (!ebayBuyItNow.equals(dbBuyItNow) || !ebayPrice.equals(dbPrice)) {
-                        System.out.println(" + with buyItNow " + title);
-                        AuctionWorker.updateAuctionPriceAndBuy(getApplicationContext(), jsonArrBg, ebayAuction.getItemId(), ebayPrice, ebayBuyItNow);
+                    dbStatus = jsonRow.getString(Constants.STATUS);
+                    ebayStatus = ebayAuction.getStatus();
+                    dbPriceString = jsonRow.getJSONObject(Constants.PRICE).getString(Constants.VALUE);
+                    ebayPriceString = ebayAuction.getPrice();
+                    dbPrice = Double.parseDouble(dbPriceString);
+                    ebayPrice = Double.parseDouble(ebayPriceString);
+                    String title;
+                    if (jsonRow.getString(Constants.TITLE).length() > 10) {
+                        title = jsonRow.getString(Constants.TITLE).substring(0, 10);
                     } else {
-                        System.out.println(" - with buyItNow " + title);
+                        title = jsonRow.getString(Constants.TITLE);
                     }
-                }else if (!ebayPrice.equals(dbPrice)) {
-                    System.out.println(" - " + title);
-                    AuctionWorker.updateAuctionPrice(getApplicationContext(), jsonArrBg, ebayAuction.getItemId(), ebayPrice, Constants.PRICE);
-                } else {
-                    System.out.println(" + " + title);
-                }
 
-            } catch (JSONException | IOException e) {
-                e.printStackTrace();
+
+                    if (ebayAuction.getBuyItNow() != null && jsonRow.has(Constants.BUY_IT_NOW)) {
+                        ebayBuyItNow = Double.parseDouble(ebayAuction.getBuyItNow());
+                        dbBuyItNow = Double.parseDouble(jsonRow.getJSONObject(Constants.BUY_IT_NOW).getString(Constants.VALUE));
+                        System.out.println("buyItNow exists");
+                        if (!ebayBuyItNow.equals(dbBuyItNow) || !ebayPrice.equals(dbPrice)) {
+                            System.out.println(" + buyItNow " + title + " BIN=" + ebayBuyItNow + "/" + dbBuyItNow);
+                            AuctionWorker.updateAuctionPriceAndBuy(getApplicationContext(), ebayAuction.getItemId(), ebayPrice, ebayBuyItNow);
+                        } else {
+                            System.out.println(" - buyItNow " + title);
+                        }
+                    } else if (!ebayPrice.equals(dbPrice)) {
+                        System.out.println(" + " + title + " price=" + ebayPrice + "/" + dbPrice);
+                        AuctionWorker.updateAuctionPrice(getApplicationContext(), ebayAuction.getItemId(), ebayPrice, Constants.PRICE);
+                    } else {
+                        System.out.println(" - " + title);
+                    }
+                    if (!ebayStatus.equals(dbStatus)) {
+                        System.out.println(" status = " + ebayStatus + "/" + dbStatus);
+                        AuctionWorker.updateAuctionByName(getApplicationContext(), ebayAuction.getItemId(), ebayStatus, Constants.STATUS);
+                    }
+
+                } catch (JSONException | IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 

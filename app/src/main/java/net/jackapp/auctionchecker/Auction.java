@@ -9,7 +9,11 @@ import org.json.JSONException;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Created by jacekkupczak on 08.04.16.
@@ -120,64 +124,64 @@ public class Auction implements Parcelable {
         }
     };
 
-    public static ArrayList<Auction> loadFromJsonArray(JSONArray auctionDBArray) {
+    public static ArrayList<Auction> loadFromJsonArray() {
         ArrayList<Auction> auctions = new ArrayList<Auction>();
-        for (int i = 0; i < auctionDBArray.length(); i++) {
+        for (int i = 0; i < MainActivity.auctionsJsonArr.length(); i++) {
             try {
                 Auction auctionFromJson = new Auction();
-                if (auctionDBArray.getJSONObject(i).has(Constants.TITLE))
-                    auctionFromJson.setTitle(auctionDBArray.getJSONObject(i).getString(Constants.TITLE));
+                if (MainActivity.auctionsJsonArr.getJSONObject(i).has(Constants.TITLE))
+                    auctionFromJson.setTitle(MainActivity.auctionsJsonArr.getJSONObject(i).getString(Constants.TITLE));
 
-                if (auctionDBArray.getJSONObject(i).has(Constants.ITEM_ID))
-                    auctionFromJson.setItemId(auctionDBArray.getJSONObject(i).getString(Constants.ITEM_ID));
+                if (MainActivity.auctionsJsonArr.getJSONObject(i).has(Constants.ITEM_ID))
+                    auctionFromJson.setItemId(MainActivity.auctionsJsonArr.getJSONObject(i).getString(Constants.ITEM_ID));
 
-                if (auctionDBArray.getJSONObject(i).has(Constants.END_TIME))
-                    auctionFromJson.setEndTime(auctionDBArray.getJSONObject(i).getString(Constants.END_TIME));
+                if (MainActivity.auctionsJsonArr.getJSONObject(i).has(Constants.END_TIME))
+                    auctionFromJson.setEndTime(MainActivity.auctionsJsonArr.getJSONObject(i).getString(Constants.END_TIME));
 
-                if (auctionDBArray.getJSONObject(i).has(Constants.AUCTION_URL))
-                    auctionFromJson.setUrl(auctionDBArray.getJSONObject(i).getString(Constants.AUCTION_URL));
+                if (MainActivity.auctionsJsonArr.getJSONObject(i).has(Constants.AUCTION_URL))
+                    auctionFromJson.setUrl(MainActivity.auctionsJsonArr.getJSONObject(i).getString(Constants.AUCTION_URL));
 
-                if (auctionDBArray.getJSONObject(i).has(Constants.LOCATION))
-                    auctionFromJson.setLocation(auctionDBArray.getJSONObject(i).getString(Constants.LOCATION));
+                if (MainActivity.auctionsJsonArr.getJSONObject(i).has(Constants.LOCATION))
+                    auctionFromJson.setLocation(MainActivity.auctionsJsonArr.getJSONObject(i).getString(Constants.LOCATION));
 
-                if (auctionDBArray.getJSONObject(i).has(Constants.PICTURE_URL)) {
+                if (MainActivity.auctionsJsonArr.getJSONObject(i).has(Constants.PICTURE_URL)) {
 //                    System.out.println("auctionDBArray = " + auctionDBArray.getJSONObject(i).get(PICTURE_URL));
-                    if (auctionDBArray.getJSONObject(i).getJSONArray(Constants.PICTURE_URL).length() > 0) {
-                        auctionFromJson.setPicture(auctionDBArray.getJSONObject(i).getJSONArray(Constants.PICTURE_URL).getString(0));
+                    if (MainActivity.auctionsJsonArr.getJSONObject(i).getJSONArray(Constants.PICTURE_URL).length() > 0) {
+                        auctionFromJson.setPicture(MainActivity.auctionsJsonArr.getJSONObject(i).getJSONArray(Constants.PICTURE_URL).getString(0));
                     } else {
                         auctionFromJson.setPicture("");
                     }
                 }
 
-                if (auctionDBArray.getJSONObject(i).has(Constants.HISTORY)) {
-                    JSONArray historyObjArr = auctionDBArray.getJSONObject(i).getJSONArray(Constants.HISTORY);
+                if (MainActivity.auctionsJsonArr.getJSONObject(i).has(Constants.HISTORY)) {
+                    JSONArray historyObjArr = MainActivity.auctionsJsonArr.getJSONObject(i).getJSONArray(Constants.HISTORY);
                     auctionFromJson.setHistory(historyObjArr);
                     auctionFromJson.setHistoryString(historyObjArr);
                 }
 
-                if (auctionDBArray.getJSONObject(i).has(Constants.BUY_IT_NOW)) {
-                    auctionFromJson.setBuyItNow(auctionDBArray.getJSONObject(i).getJSONObject(Constants.BUY_IT_NOW).getString("Value"));
-                    auctionFromJson.setCurrency(auctionDBArray.getJSONObject(i).getJSONObject(Constants.BUY_IT_NOW).getString("CurrencyID"));
+                if (MainActivity.auctionsJsonArr.getJSONObject(i).has(Constants.BUY_IT_NOW)) {
+                    auctionFromJson.setBuyItNow(MainActivity.auctionsJsonArr.getJSONObject(i).getJSONObject(Constants.BUY_IT_NOW).getString("Value"));
+                    auctionFromJson.setCurrency(MainActivity.auctionsJsonArr.getJSONObject(i).getJSONObject(Constants.BUY_IT_NOW).getString("CurrencyID"));
                 } else {
                     auctionFromJson.setBuyItNow("-");
                 }
 
-                if (auctionDBArray.getJSONObject(i).has(Constants.PRICE)) {
-                    auctionFromJson.setPrice(auctionDBArray.getJSONObject(i).getJSONObject(Constants.PRICE).getString("Value"));
-                    auctionFromJson.setCurrency(auctionDBArray.getJSONObject(i).getJSONObject(Constants.PRICE).getString("CurrencyID"));
+                if (MainActivity.auctionsJsonArr.getJSONObject(i).has(Constants.PRICE)) {
+                    auctionFromJson.setPrice(MainActivity.auctionsJsonArr.getJSONObject(i).getJSONObject(Constants.PRICE).getString("Value"));
+                    auctionFromJson.setCurrency(MainActivity.auctionsJsonArr.getJSONObject(i).getJSONObject(Constants.PRICE).getString("CurrencyID"));
 
                 } else {
                     auctionFromJson.setPrice("-");
                 }
 
-                if (auctionDBArray.getJSONObject(i).has(Constants.CREATE_AT))
-                    auctionFromJson.setStatus(auctionDBArray.getJSONObject(i).getString(Constants.CREATE_AT));
+                if (MainActivity.auctionsJsonArr.getJSONObject(i).has(Constants.CREATE_AT))
+                    auctionFromJson.setStatus(MainActivity.auctionsJsonArr.getJSONObject(i).getString(Constants.CREATE_AT));
 
-                if (auctionDBArray.getJSONObject(i).has(Constants.STATUS))
-                    auctionFromJson.setStatus(auctionDBArray.getJSONObject(i).getString(Constants.STATUS));
+                if (MainActivity.auctionsJsonArr.getJSONObject(i).has(Constants.STATUS))
+                    auctionFromJson.setStatus(MainActivity.auctionsJsonArr.getJSONObject(i).getString(Constants.STATUS));
 
-                if (auctionDBArray.getJSONObject(i).has(Constants.COUNTRY))
-                    auctionFromJson.setCountry(auctionDBArray.getJSONObject(i).getString(Constants.COUNTRY));
+                if (MainActivity.auctionsJsonArr.getJSONObject(i).has(Constants.COUNTRY))
+                    auctionFromJson.setCountry(MainActivity.auctionsJsonArr.getJSONObject(i).getString(Constants.COUNTRY));
                 auctions.add(auctionFromJson);
             } catch (JSONException e) {
                 Log.e("Auction fromJson()", e.toString());
@@ -186,13 +190,13 @@ public class Auction implements Parcelable {
         return auctions;
     }
 
-    public static boolean auctionExist(String id, JSONArray db) {
+    public static boolean auctionExist(String id) {
 
         boolean exist = false;
 
-        for (int i = 0; i < db.length(); i++) {
+        for (int i = 0; i < MainActivity.auctionsJsonArr.length(); i++) {
             try {
-                if (db.getJSONObject(i).getString(Constants.ITEM_ID).equals(id))
+                if (MainActivity.auctionsJsonArr.getJSONObject(i).getString(Constants.ITEM_ID).equals(id))
                     exist = true;
             } catch (JSONException e) {
                 Log.e("function auctionExist", e.toString());
@@ -339,6 +343,20 @@ public class Auction implements Parcelable {
             String dateTime = fullDate.substring(0, fullDate.length() - 5);
             String[] dateTimeArr = dateTime.split("T");
             dateString = dateTimeArr[0] + " " + dateTimeArr[1];
+
+            SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            SimpleDateFormat fmt1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String timeZoneId = TimeZone.getDefault().getID();
+            try {
+                fmt.setTimeZone(TimeZone.getTimeZone("UTC"));
+                Date date = fmt.parse(fullDate);
+                dateString = fmt1.format(date);
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+
         }else {
             dateString = "-";
         }
