@@ -243,7 +243,7 @@ public class Auction implements Parcelable {
 
     public String getBuyItNow() {
         try {
-            if (buyItNow != null && buyItNow != "-") {
+            if (buyItNow != null && !buyItNow.equals("-")) {
                 Float buyItNowF = Float.parseFloat(buyItNow);
                 decimalFormat = new DecimalFormat("###.00");
                 decimalFormat.setMaximumFractionDigits(2);
@@ -260,13 +260,15 @@ public class Auction implements Parcelable {
 
     public String getCurrencyBuyItNow() {
         try {
-            if (buyItNow != null && buyItNow != "-") {
+            if (buyItNow != null && !buyItNow.equals("-")) {
                 Float buyItNowF = Float.valueOf(buyItNow);
                 currencyFormat = new DecimalFormat("###,###.00");
                 currencyFormat.setMaximumFractionDigits(2);
                 currencyFormat.setDecimalFormatSymbols(symbols);
                 String buyItNowCurr = currencyFormat.format(buyItNowF);
                 return buyItNowCurr + " " + getCurrency();
+            }else {
+                return buyItNow;
             }
         } catch (NumberFormatException e) {
             Log.e("getbuyItNow", e.toString());

@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:background="@color/colorTopBar"
         >
-        <net.jackapp.auctionchecker.CaviarTV
+        <TextView
             android:id="@+id/close_info_tv"
             android:clickable="true"
             android:layout_width="wrap_content"
@@ -25,7 +25,7 @@
             android:layout_alignParentRight="true"
             android:padding="10dp"
             />
-        <net.jackapp.auctionchecker.CaviarTV
+        <TextView
             android:id="@+id/title_info_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

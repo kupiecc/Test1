@@ -22,6 +22,8 @@ import java.io.InputStreamReader;
  */
 public class FileWorker {
 
+    private File cacheDir;
+
     public void createJsonFile(Context context, String jsonFileName) throws JSONException {
 
         File jsonFile = new File(context.getApplicationContext().getFilesDir(), jsonFileName);
@@ -105,7 +107,6 @@ public class FileWorker {
         }
 
         return readString.toString();
-
     }
 
 }

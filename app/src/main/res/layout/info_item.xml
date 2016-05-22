@@ -6,7 +6,7 @@
     android:paddingBottom="5dp">
 
 
-    <net.jackapp.auctionchecker.CaviarTV
+    <TextView
         android:id="@+id/info_auction_title_tv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,14 +16,14 @@
         android:textColor="#fff" />
 
 
-    <net.jackapp.auctionchecker.CaviarTV
+    <TextView
         android:id="@+id/info_auction_buy_it_now_tv"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:text="price item"
         android:textColor="#fff" />
 
-    <net.jackapp.auctionchecker.CaviarTV
+    <TextView
         android:id="@+id/info_auction_price_tv"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
@@ -31,7 +31,7 @@
         android:textColor="#fff" />
 
 
-    <net.jackapp.auctionchecker.CaviarTV
+    <TextView
         android:id="@+id/info_url_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

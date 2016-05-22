@@ -6,7 +6,7 @@
     android:paddingBottom="5dp">
 
 
-    <net.jackapp.auctionchecker.CaviarTV
+    <TextView
         android:id="@+id/info_auction_title_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

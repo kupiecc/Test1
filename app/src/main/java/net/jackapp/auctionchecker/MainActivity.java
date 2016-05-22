@@ -52,7 +52,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -75,11 +74,9 @@ public class MainActivity extends AppCompatActivity {
 
     ActionBarDrawerToggle drawerToggle;
     ArrayList<Auction> auctionsList;
-    AuctionAdapter auctionsAdapter;
     AuctionRecyclerAdapter auctionRecyclerAdapter;
     Auction foundAuction, auctionAnalyzeEbay, auctionAnalyzeApp;
     Bitmap picBmp;
-    DecimalFormat decimalFormat;
     DrawerLayout drawerLayout;
     FileWorker fileWorker = new FileWorker();
     FrameLayout drawerFrameLayout;
@@ -103,73 +100,60 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        System.out.println("onCreate MainWorker");
         setContentView(R.layout.activity_main);
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        decimalFormat = new DecimalFormat("###.00");
-        decimalFormat.setMaximumFractionDigits(2);
-
         initViewObject();
         loadCountriesCode();
+        registerBroadcast();
 
-        background();
+//        background();
 
+        loadJsonToLv();
+    }
+
+    private void registerBroadcast() {
         BroadcastReceiver receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                try {
-                    loadJsonToLv();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                loadJsonToLv();
             }
         };
-
         IntentFilter bgIntentFilter = new IntentFilter(Constants.BROADCAST_ACTION);
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, bgIntentFilter);
-
-        try {
-            loadJsonToLv();
-        } catch (JSONException e) {
-            Log.e("onCreate: ", e.toString());
-        }
     }
 
-    private void prepareList(){}
+    private void prepareList() {
+    }
 
-    public void loadJsonToLv() throws JSONException {
-
-        MainActivity.auctionsJsonArr = jsonWorker.readFileToJsonArray(this, Constants.JSON_DB_NAME);
-//        System.out.println(" history " + MainActivity.auctionsJsonArr.getJSONObject(0).getJSONObject(Constants.HISTORY));
-        auctionsList = new ArrayList<>();
-        auctionsList.clear();
-        ArrayList<Auction> newAuctions = Auction.loadFromJsonArray();
-        auctionsAdapter = new AuctionAdapter(getApplicationContext(), auctionsList);
-        auctionsAdapter.clear();
-        auctionsAdapter.addAll(newAuctions);
-
+    public void loadJsonToLv() {
         try {
+            MainActivity.auctionsJsonArr = jsonWorker.readFileToJsonArray(this, Constants.JSON_DB_NAME);
+            auctionsList = new ArrayList<>();
+            auctionsList.clear();
+            ArrayList<Auction> newAuctions = Auction.loadFromJsonArray();
             Collections.sort(newAuctions, new Comparator<Auction>() {
                 @Override
                 public int compare(Auction lhs, Auction rhs) {
                     return lhs.getStatus().compareToIgnoreCase(rhs.getStatus());
                 }
             });
-        } catch (Exception e) {
+            auctionRecyclerAdapter = new AuctionRecyclerAdapter(this, newAuctions);
+            RecyclerView rv = (RecyclerView) findViewById(R.id.list_auctions);
+            assert rv != null;
+            rv.setLayoutManager(new LinearLayoutManager(this));
+            rv.setAdapter(auctionRecyclerAdapter);
+        } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        auctionRecyclerAdapter = new AuctionRecyclerAdapter(this, newAuctions);
-        RecyclerView rv = (RecyclerView) findViewById(R.id.list_auctions);
-        assert rv != null;
-        rv.setLayoutManager(new LinearLayoutManager(this));
-        rv.setAdapter(auctionRecyclerAdapter);
 
     }
 
     private void initViewObject() {
+        System.out.println("initViewObject");
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         assert toolbar != null;
         toolbar.setTitle("");
@@ -195,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
         DrawerAdapter drawerAdapter = new DrawerAdapter(this, R.layout.drawer_list_item, drawerItem);
         drawerLv.setAdapter(drawerAdapter);
         drawerLv.setOnItemClickListener(new DrawerItemClickListener());
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close){
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
@@ -210,22 +194,6 @@ public class MainActivity extends AppCompatActivity {
                 getSupportActionBar().setTitle("on drawable opened");
             }
         };
-//
-//        drawerLayout.setDrawerListener(drawerToggle);
-//        getActionBar().setDisplayHomeAsUpEnabled(true);
-//        getActionBar().setHomeButtonEnabled(true);
-
-//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (drawerLayout.isDrawerVisible(Gravity.LEFT)) {
-//                    return;
-//                } else {
-//                    drawerLayout.openDrawer(Gravity.LEFT);
-//                }
-//            }
-//        });
-
 
     }
 
@@ -242,22 +210,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
 
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        String titleContextItem = auctionsAdapter.getItem(info.position).getTitle();
-        String idContextItem = auctionsAdapter.getItem(info.position).getItemId();
+        return super.onContextItemSelected(item);
 
-        switch (item.getItemId()) {
-            case R.id.delete_id:
-//                auctionsJsonArr = jsonWorker.removeAuctionFromJson(auctionsJsonArr, idContextItem);
-//                fileWorker.writeJsonFile(this, auctionsJsonArr.toString(), Constants.JSON_DB_NAME);
-//                auctionsList.remove(info.position);
-//                auctionsAdapter.notifyDataSetChanged();
-//                Toast.makeText(this, titleContextItem + " removed.", Toast.LENGTH_LONG).show();
-                return true;
-            default:
-                return super.onContextItemSelected(item);
-
-        }
     }
 
     @Override
@@ -293,24 +247,27 @@ public class MainActivity extends AppCompatActivity {
 
     private void background() {
 
+        System.out.println("Background()");
+
+        if (alarmManager != null) {
+            alarmManager.cancel(alarmIntent);
+        }
+
         Intent bgIntent = new Intent(this, BackgroundService.class);
-//        bgIntent.putExtra("auctionDB", auctionsJsonArr.toString());
-//        System.out.println("auctionsJsonArr = " + auctionsJsonArr);
         PendingIntent alarmIntent = PendingIntent.getService(this, 0, bgIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60 * 1000, alarmIntent);
-        System.out.println("SystemClock.elapsedRealtime() = " + SystemClock.elapsedRealtime());
-
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 2 * 60 * 1000, alarmIntent);
         startService(bgIntent);
 
 
     }
 
-    public static void updateList(){
+    public static void updateList() {
 
     }
 
     private void loadCountriesCode() {
+        System.out.println("LoadCountriesCode");
 
         try {
             countriesDBString = fileWorker.readFile(this, "countriesCode.json", this.getAssets());
@@ -334,6 +291,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void pasteAction() {
 
+        FileCache fileCache = new FileCache(this);
+        fileCache.clear();
         saveBtnTv.setVisibility(View.INVISIBLE);
         clearBtnTv.setVisibility(View.INVISIBLE);
         analyzeClipUrl();
@@ -360,6 +319,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void saveAuction(View view) throws JSONException {
+
+        saveBtnTv.setClickable(false);
+        saveBtnTv.setTextColor(getResources().getColor(R.color.colorPrimary100));
 
         JSONObject itemJson = new JSONObject();
 
@@ -406,6 +368,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         System.out.println("DB titles after save");
+        saveBtnTv.setClickable(true);
+        saveBtnTv.setTextColor(getResources().getColor(R.color.colorPrimary));
+
         StaticWorker.showDBTitles();
     }
 
@@ -480,9 +445,9 @@ public class MainActivity extends AppCompatActivity {
             selectItem(position);
         }
 
-        private void selectItem(int position){
+        private void selectItem(int position) {
 
-            switch (position){
+            switch (position) {
                 case 0:
                     System.out.println("Settings clicked");
                     Intent settingsIntent = new Intent(getApplicationContext(), SettingsView.class);
@@ -504,7 +469,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     class AnalyzeAuctions extends AsyncTask<Integer, Void, Void> {
-
 
 
         @Override
@@ -718,7 +682,8 @@ public class MainActivity extends AppCompatActivity {
             if (foundAuction.getTitle() != null) titleTv.setText(foundAuction.getTitle());
             if (foundAuction.getCurrencyBuyItNow() != null)
                 buyItNowTv.setText(foundAuction.getCurrencyBuyItNow());
-            if (foundAuction.getCurrencyPrice() != null) priceTv.setText(foundAuction.getCurrencyPrice());
+            if (foundAuction.getCurrencyPrice() != null)
+                priceTv.setText(foundAuction.getCurrencyPrice());
             if (foundAuction.getTitle() != null) saveBtnTv.setVisibility(View.VISIBLE);
             clearBtnTv.setVisibility(View.VISIBLE);
             System.out.println("Auction after paste = ");

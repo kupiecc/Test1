@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -26,16 +27,16 @@ import java.net.URL;
  */
 public class AuctionView extends Activity {
 
-    TextView buyItNowTv, priceTv, buyItNowLblTv, priceLblTv, endTimeTv,
-            titleTv;
-    ImageView pictureIv, pictureIvBg, activeIv;
-    ListView historyList;
-    LinearLayout historyListLayout, historyRowLayout;
     Auction auction;
-    String historyString;
+    ImageView pictureIv, pictureIvBg, activeIv;
+    Intent context;
     JSONArray historyArray;
     JSONObject historyJsonObj;
-    Intent context;
+    ListView historyList;
+    LinearLayout historyListLayout, historyRowLayout;
+    ProgressBar progressBar;
+    String historyString;
+    TextView buyItNowTv, priceTv, buyItNowLblTv, priceLblTv, endTimeTv, titleTv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +74,7 @@ public class AuctionView extends Activity {
         historyList = (ListView) findViewById(R.id.history_list_view);
         historyListLayout = (LinearLayout) findViewById(R.id.history_list_view_layout);
         historyRowLayout = (LinearLayout) findViewById(R.id.history_row_layout);
+        progressBar = (ProgressBar) findViewById(R.id.progress_bar_view);
 
     }
 
@@ -147,16 +149,12 @@ public class AuctionView extends Activity {
         protected void onPostExecute(Bitmap pic) {
             super.onPostExecute(pic);
 
+            progressBar.setVisibility(View.GONE);
             if (pic != null) {
-//                assert pictureIvBg != null;
-//                pictureIvBg.setImageBitmap(pic);
-
                 assert pictureIv != null;
                 pictureIv.setImageBitmap(pic);
-
             } else {
                 pictureIv.setImageResource(R.drawable.no_img);
-//                pictureIvBg.setImageResource(R.drawable.no_img);
             }
         }
     }

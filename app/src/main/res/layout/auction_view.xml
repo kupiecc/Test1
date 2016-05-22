@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:background="@color/colorWhite">
 
-        <net.jackapp.auctionchecker.CaviarTV
+        <TextView
             android:id="@+id/title_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -43,16 +43,29 @@
                     android:minHeight="120dp"
                     android:orientation="horizontal">
 
-                    <ImageView
-                        android:id="@+id/picture_view"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_margin="10dp"
-                        android:adjustViewBounds="true"
-                        android:elevation="4dp"
-                        android:src="@drawable/no_img" />
-
+                        android:gravity="center"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/picture_view"
+                            android:layout_width="100dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_margin="10dp"
+                            android:adjustViewBounds="true"
+                            android:elevation="4dp"
+                            android:src="@drawable/no_img" />
+                        <ProgressBar
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:id="@+id/progress_bar_view"
+                            android:elevation="4dp"
+                            style="@android:style/Widget.Holo.ProgressBar.Small.Title"
+                            android:layout_centerInParent="true"
+                            android:indeterminate="true"/>
+                    </RelativeLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -62,7 +75,7 @@
                         android:layout_weight="1"
                         android:orientation="vertical">
 
-                        <net.jackapp.auctionchecker.CaviarTV
+                        <TextView
                             android:id="@+id/price_view_lbl"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -70,7 +83,7 @@
                             android:textColor="@color/colorTxtLight"
                             android:textSize="12dp" />
 
-                        <net.jackapp.auctionchecker.CaviarTV
+                        <TextView
                             android:id="@+id/price_view"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -81,7 +94,7 @@
                             android:textColor="@color/colorAccentDark"
                             android:textSize="18dp" />
 
-                        <net.jackapp.auctionchecker.CaviarTV
+                        <TextView
                             android:id="@+id/buy_it_now_view_lbl"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -89,7 +102,7 @@
                             android:textColor="@color/colorTxtLight"
                             android:textSize="12dp" />
 
-                        <net.jackapp.auctionchecker.CaviarTV
+                        <TextView
                             android:id="@+id/buy_it_now_view"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -100,7 +113,7 @@
                             android:textColor="@color/colorAccentDark"
                             android:textSize="18dp" />
 
-                        <net.jackapp.auctionchecker.CaviarTV
+                        <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="3dp"
@@ -108,7 +121,7 @@
                             android:textColor="@color/colorTxtLight"
                             android:textSize="10dp" />
 
-                        <net.jackapp.auctionchecker.CaviarTV
+                        <TextView
                             android:id="@+id/end_time_view"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"

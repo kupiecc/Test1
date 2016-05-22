@@ -8,13 +8,14 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 
@@ -33,31 +34,34 @@ public class AuctionRecyclerAdapter extends RecyclerView.Adapter<AuctionRecycler
     private ArrayList<Auction> auctions;
     private JSONArray jsonArray;
     private boolean isSmall = true;
+    private ViewHolder viewHolder;
 
     private Context context;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private Button urlBtn, historyBtn;
-        private CaviarTV titleTv, endTimeTv, urlTv;
-        private CaviarTV buyItNowTv, priceTv;
+        private TextView titleTv, endTimeTv, urlTv;
+        private TextView buyItNowTv, priceTv;
         private ImageView pictureIv, activeIv, deleteIv;
         private Bitmap picBmp;
+        private ProgressBar progressBar;
         private CardView cardView;
 
         // each data item is just a string in this case
         public ViewHolder(View row_view) {
             super(row_view);
-            titleTv = (CaviarTV) row_view.findViewById(R.id.title_row);
-            buyItNowTv = (CaviarTV) row_view.findViewById(R.id.buy_it_now_row);
-            priceTv = (CaviarTV) row_view.findViewById(R.id.price_row);
-            urlTv = (CaviarTV) row_view.findViewById(R.id.url_row);
+            titleTv = (TextView) row_view.findViewById(R.id.title_row);
+            buyItNowTv = (TextView) row_view.findViewById(R.id.buy_it_now_row);
+            priceTv = (TextView) row_view.findViewById(R.id.price_row);
+            urlTv = (TextView) row_view.findViewById(R.id.url_row);
             urlBtn = (Button) row_view.findViewById(R.id.url_btn_row);
             historyBtn = (Button) row_view.findViewById(R.id.history_btn_row);
-            endTimeTv = (CaviarTV) row_view.findViewById(R.id.date_row);
+            endTimeTv = (TextView) row_view.findViewById(R.id.date_row);
             pictureIv = (ImageView) row_view.findViewById(R.id.picture_row);
             activeIv = (ImageView) row_view.findViewById(R.id.active_row);
             cardView = (CardView) row_view.findViewById(R.id.card_view_row);
             deleteIv = (ImageView) row_view.findViewById(R.id.delete_row);
+            progressBar = (ProgressBar) row_view.findViewById(R.id.progress_bar_row);
             priceTv.setVisibility(View.VISIBLE);
         }
 
@@ -85,6 +89,8 @@ public class AuctionRecyclerAdapter extends RecyclerView.Adapter<AuctionRecycler
 
         final Auction auction = auctions.get(position);
 
+        this.viewHolder = holder;
+
         holder.titleTv.setText(auction.getTitle());
         holder.endTimeTv.setText(auction.getEndDateTime());
         holder.urlTv.setText(auction.getUrl());
@@ -103,12 +109,12 @@ public class AuctionRecyclerAdapter extends RecyclerView.Adapter<AuctionRecycler
             @Override
             public void onClick(final View v) {
 
-                if(holder.cardView.getMeasuredHeight() == (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, lhHigh, context.getResources().getDisplayMetrics())){
+                if (holder.cardView.getMeasuredHeight() == (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, lhHigh, context.getResources().getDisplayMetrics())) {
                     lhDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, lhLow, context.getResources().getDisplayMetrics());
                     imgWHDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, imgLow, context.getResources().getDisplayMetrics());
                     alpha = 0;
                     holder.titleTv.setLines(1);
-                }else {
+                } else {
                     lhDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, lhHigh, context.getResources().getDisplayMetrics());
                     imgWHDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, imgHigh, context.getResources().getDisplayMetrics());
                     alpha = 1;
@@ -183,21 +189,12 @@ public class AuctionRecyclerAdapter extends RecyclerView.Adapter<AuctionRecycler
             }
         });
 
-        try {
-            if (auction.getPicture() != "") {
-                URL picUrl = new URL(auction.getPicture());
-                InputStream in = picUrl.openConnection().getInputStream();
-                BitmapFactory.Options bfOptions = new BitmapFactory.Options();
-                bfOptions.inJustDecodeBounds = false;
-                bfOptions.inSampleSize = 3;
-                holder.picBmp = BitmapFactory.decodeStream(in, null, bfOptions);
-                holder.pictureIv.setImageBitmap(holder.picBmp);
-            } else {
-                holder.pictureIv.setImageResource(R.drawable.img_no_img);
-            }
-        } catch (IOException e) {
-            Log.e("AuctionAdapter getView", e.toString());
-            e.printStackTrace();
+        if (auction.getPicture() != "") {
+            ImageLoader imageLoader = new ImageLoader(context);
+            imageLoader.displayImage(auction.getPicture(), holder.pictureIv, holder.progressBar);
+//            new DownloadImageTask(holder.pictureIv, holder.progressBar).execute(auction.getPicture());
+        } else {
+            holder.pictureIv.setImageResource(R.drawable.img_no_img);
         }
 
         if (auction.getStatus().equals("Active")) {
@@ -213,6 +210,50 @@ public class AuctionRecyclerAdapter extends RecyclerView.Adapter<AuctionRecycler
             holder.buyItNowTv.setText(auction.getCurrencyBuyItNow());
             holder.priceTv.setText(auction.getCurrencyPrice());
         }
+    }
+
+//    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+//
+//        private final WeakReference<ImageView> imgRef;
+//        private final WeakReference<ProgressBar> pbRef;
+//
+//        public DownloadImageTask(ImageView imageView, ProgressBar progressBar){
+//            imgRef = new WeakReference<ImageView>(imageView);
+//            pbRef = new WeakReference<ProgressBar>(progressBar);
+//        }
+//
+//        protected Bitmap doInBackground(String... urls) {
+//            return loadImage(urls[0]);
+//        }
+//
+//        protected void onPostExecute(Bitmap result) {
+//            ImageView imgView = imgRef.get();
+//            if(imgView != null){
+//                if(result != null){
+//                    imgView.setImageBitmap(result);
+//                }
+//            }
+//            ProgressBar pbView = pbRef.get();
+//            if(pbView != null){
+//                pbView.setVisibility(View.GONE);
+//            }
+//        }
+//    }
+
+    private Bitmap loadImage(String url) {
+        URL picUrl = null;
+        Bitmap bitmap = null;
+        try {
+            picUrl = new URL(url);
+            InputStream in = picUrl.openConnection().getInputStream();
+            BitmapFactory.Options bfOptions = new BitmapFactory.Options();
+            bfOptions.inJustDecodeBounds = false;
+            bfOptions.inSampleSize = 3;
+            bitmap = BitmapFactory.decodeStream(in, null, bfOptions);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bitmap;
     }
 
     // Return the size of your dataset (invoked by the layout manager)

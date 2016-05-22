@@ -24,8 +24,8 @@ public class AuctionWorker {
 
     private static FileWorker fileWorker = new FileWorker();
 
-
     public static String getJsonData(URL url) throws IOException {
+
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         InputStream in = new BufferedInputStream(urlConnection.getInputStream());
         BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"), 8);
