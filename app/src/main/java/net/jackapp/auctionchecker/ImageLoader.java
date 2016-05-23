@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by jacekkupczak on 18.05.16.
@@ -37,6 +38,7 @@ public class ImageLoader {
     public ImageLoader(Context context) {
 
         fileCache = new FileCache(context);
+        executorService = Executors.newFixedThreadPool(5);
 
     }
 
@@ -47,10 +49,13 @@ public class ImageLoader {
         Bitmap bitmap = memoryCache.get(url);
         if (bitmap != null) {
             System.out.println("Bitmap from cache");
+            progressBar.setVisibility(View.GONE);
             imageView.setImageBitmap(bitmap);
         } else {
             System.out.println("Bitmap from url");
+            progressBar.setVisibility(View.VISIBLE);
             new DownloadImageTask(imageView, progressBar).execute(url);
+            queuePhoto(url, imageView);
             imageView.setImageResource(stub_id);
         }
     }
@@ -58,7 +63,6 @@ public class ImageLoader {
     private void queuePhoto(String url, ImageView imageView) {
         PhotoToLoad p = new PhotoToLoad(url, imageView);
         executorService.submit(new PhotosLoader(p));
-//        executorService.submit(new PhotosLoader(p));
     }
 
     private Bitmap getBitmap(String url) {
@@ -95,10 +99,7 @@ public class ImageLoader {
     private Bitmap decodeFile(File f) {
         BitmapFactory.Options o = new BitmapFactory.Options();
         o.inJustDecodeBounds = true;
-
-        System.out.println("f = " + f.getAbsolutePath() + " exists = " + f.exists());
         return BitmapFactory.decodeFile(f.getAbsolutePath());
-
     }
 
     private class PhotoToLoad {
@@ -177,7 +178,7 @@ public class ImageLoader {
         Bitmap bitmap = null;
 
         Bitmap b = BitmapFactory.decodeFile(fileFromCache.getAbsolutePath());
-        if (b != null){
+        if (b != null) {
             return b;
         }
 
@@ -223,12 +224,8 @@ public class ImageLoader {
         protected void onPostExecute(Bitmap result) {
             ImageView imgView = imgRef.get();
             if (imgView != null) {
-                System.out.println("imgView");
                 if (result != null) {
-                    System.out.println("result");
                     imgView.setImageBitmap(result);
-//                    Bitmap bmp = getBitmap(photoToLoad.url);
-//                    memoryCache.put(photoToLoad.url, bmp);
 
                 }
             }

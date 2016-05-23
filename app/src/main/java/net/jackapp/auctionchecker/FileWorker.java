@@ -45,7 +45,6 @@ public class FileWorker {
     public void writeJsonFile(Context context, JSONArray jsonArray, String jsonFileName) {
 
         File jsonFile = new File(context.getApplicationContext().getFilesDir(), jsonFileName);
-//        String jsonToSaveString = jsonToSave;
         FileOutputStream os;
         try {
             if (!jsonFile.exists()) {
@@ -54,7 +53,7 @@ public class FileWorker {
             os = context.openFileOutput(jsonFileName, Context.MODE_PRIVATE);
             os.write(jsonArray.toString().getBytes());
             os.close();
-//            Toast.makeText(context.getApplicationContext(), "Auction saved", Toast.LENGTH_LONG).show();
+            System.out.println("JSON DB updated");
         } catch (IOException e) {
             e.printStackTrace();
         }

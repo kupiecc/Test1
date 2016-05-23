@@ -21,7 +21,9 @@
     <color name="colorTopBarBg">#2a2a2a</color>
     <color name="colorTopBar">#fafafa</color>
     <color name="colorGrayLight">#ddd</color>
+    <color name="colorGrayDark">#333</color>
     <color name="colorWhite">#fff</color>
+    <color name="colorBlack">#000</color>
     <color name="colorTxtLight">#9a9a9a</color>
     <color name="colorTxtDark">#252525</color>
 

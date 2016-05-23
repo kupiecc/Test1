@@ -4,7 +4,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -17,11 +16,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.json.JSONArray;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -30,10 +24,7 @@ import java.util.ArrayList;
 public class AuctionRecyclerAdapter extends RecyclerView.Adapter<AuctionRecyclerAdapter.ViewHolder> {
 
 
-    private String[] mDataset;
     private ArrayList<Auction> auctions;
-    private JSONArray jsonArray;
-    private boolean isSmall = true;
     private ViewHolder viewHolder;
 
     private Context context;
@@ -171,20 +162,20 @@ public class AuctionRecyclerAdapter extends RecyclerView.Adapter<AuctionRecycler
             public void onClick(View v) {
                 Intent showItemIntent = new Intent(context, AuctionView.class);
                 Auction auctionToView = auctions.get(position);
+                System.out.println("auction.getTrash() = " + auction.getTrash());
+                showItemIntent.putExtra("trash", auction.getTrash());
                 showItemIntent.putExtra("auctionToView", auctionToView);
                 showItemIntent.putExtra("history", auctionToView.getHistoryString());
                 context.startActivity(showItemIntent);
-                System.out.println("v.toString() = " + auctionToView.getTitle());
             }
         });
 
         holder.deleteIv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AuctionWorker.removeAuction(context, auction.getItemId());
+                AuctionWorker.setTrash(context, auction.getItemId(), true);
                 auctions.remove(position);
                 notifyDataSetChanged();
-                System.out.println("Auctions afrer delete ");
                 StaticWorker.showDBTitles();
             }
         });
@@ -195,6 +186,7 @@ public class AuctionRecyclerAdapter extends RecyclerView.Adapter<AuctionRecycler
 //            new DownloadImageTask(holder.pictureIv, holder.progressBar).execute(auction.getPicture());
         } else {
             holder.pictureIv.setImageResource(R.drawable.img_no_img);
+            holder.progressBar.setVisibility(View.GONE);
         }
 
         if (auction.getStatus().equals("Active")) {
@@ -210,50 +202,6 @@ public class AuctionRecyclerAdapter extends RecyclerView.Adapter<AuctionRecycler
             holder.buyItNowTv.setText(auction.getCurrencyBuyItNow());
             holder.priceTv.setText(auction.getCurrencyPrice());
         }
-    }
-
-//    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-//
-//        private final WeakReference<ImageView> imgRef;
-//        private final WeakReference<ProgressBar> pbRef;
-//
-//        public DownloadImageTask(ImageView imageView, ProgressBar progressBar){
-//            imgRef = new WeakReference<ImageView>(imageView);
-//            pbRef = new WeakReference<ProgressBar>(progressBar);
-//        }
-//
-//        protected Bitmap doInBackground(String... urls) {
-//            return loadImage(urls[0]);
-//        }
-//
-//        protected void onPostExecute(Bitmap result) {
-//            ImageView imgView = imgRef.get();
-//            if(imgView != null){
-//                if(result != null){
-//                    imgView.setImageBitmap(result);
-//                }
-//            }
-//            ProgressBar pbView = pbRef.get();
-//            if(pbView != null){
-//                pbView.setVisibility(View.GONE);
-//            }
-//        }
-//    }
-
-    private Bitmap loadImage(String url) {
-        URL picUrl = null;
-        Bitmap bitmap = null;
-        try {
-            picUrl = new URL(url);
-            InputStream in = picUrl.openConnection().getInputStream();
-            BitmapFactory.Options bfOptions = new BitmapFactory.Options();
-            bfOptions.inJustDecodeBounds = false;
-            bfOptions.inSampleSize = 3;
-            bitmap = BitmapFactory.decodeStream(in, null, bfOptions);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return bitmap;
     }
 
     // Return the size of your dataset (invoked by the layout manager)

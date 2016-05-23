@@ -5,6 +5,17 @@
     android:background="@color/colorGrayLight"
     android:orientation="vertical">
 
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/view_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:fitsSystemWindows="true"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
     <RelativeLayout
         android:id="@+id/title_layout_view"
         android:layout_width="match_parent"
@@ -40,6 +51,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="@color/colorWhite"
                     android:minHeight="120dp"
                     android:orientation="horizontal">
 
@@ -114,6 +126,16 @@
                             android:textSize="18dp" />
 
                         <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAlignment="center"
+                            android:textColor="@color/colorAccent"
+                            android:textSize="18dp"
+                            android:padding="5dp"
+                            android:id="@+id/trash_info_view"
+                            android:text="In trash"/>
+
+                        <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="3dp"
@@ -149,6 +171,7 @@
 
                         <ImageView
                             android:layout_width="wrap_content"
+                            android:id="@+id/url_view"
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
                             android:layout_marginLeft="5dp"
@@ -160,6 +183,7 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentBottom="true"
                             android:layout_marginBottom="10dp"
+                            android:id="@+id/trash_view"
                             android:layout_marginLeft="5dp"
                             android:layout_marginRight="5dp"
                             android:src="@mipmap/ic_delete_white_24dp" />
@@ -183,6 +207,7 @@
                     android:layout_height="match_parent"
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
+                    android:background="@color/colorWhite"
                     android:orientation="vertical">
 
                     <ListView

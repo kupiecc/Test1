@@ -124,6 +124,21 @@ public class AuctionWorker {
         }
     }
 
+    public static void setTrash(Context context, String id, boolean trash){
+        System.out.println("moveToTrash");
+        for (int i = 0; i < MainActivity.auctionsJsonArr.length(); i++) {
+            try{
+                System.out.println("id = " + id);
+                if (MainActivity.auctionsJsonArr.getJSONObject(i).get(Constants.ITEM_ID).toString().equals(id)) {
+                    MainActivity.auctionsJsonArr.getJSONObject(i).put(Constants.TRASH, trash);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        fileWorker.writeJsonFile(context, MainActivity.auctionsJsonArr, Constants.JSON_DB_NAME);
+    }
+
     public static void removeAuction(Context context, String id) {
         JSONArray newJsonArray = new JSONArray();
         for (int i = 0; i < MainActivity.auctionsJsonArr.length(); i++) {
@@ -137,6 +152,12 @@ public class AuctionWorker {
         }
         MainActivity.auctionsJsonArr = newJsonArray;
         fileWorker.writeJsonFile(context, newJsonArray, Constants.JSON_DB_NAME);
+    }
+
+    private static void backwardPopup(){
+
+
+
     }
 
 }

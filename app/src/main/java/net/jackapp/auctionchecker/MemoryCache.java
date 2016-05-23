@@ -13,11 +13,11 @@ import java.util.Map;
 public class MemoryCache {
     private static final String TAG = "MemoryCache";
 
-    private Map<String, Bitmap> cache =
+    private static Map<String, Bitmap> cache =
             Collections.synchronizedMap(new LinkedHashMap<String, Bitmap>(10, 1.5f, true));
 
     private long size = 0;
-    private long limit = 5*1000000;
+    private long limit = 3000000;
 
     public MemoryCache() {
         setLimit(Runtime.getRuntime().maxMemory() / 4);
@@ -28,7 +28,6 @@ public class MemoryCache {
     }
 
     public Bitmap get(String id) {
-        System.out.println("cache = " + cache);
         try {
             if(!cache.containsKey(id)) {
                 return null;

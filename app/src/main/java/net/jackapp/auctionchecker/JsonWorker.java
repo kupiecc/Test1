@@ -47,4 +47,21 @@ public class JsonWorker {
         }
         return newDb;
     }
+
+    public JSONArray removeAllTrash(){
+        JSONArray newDb = new JSONArray();
+        try {
+            for (int i = 0; i < MainActivity.auctionsJsonArr.length(); i++) {
+
+                if(!MainActivity.auctionsJsonArr.getJSONObject(i).getBoolean(Constants.TRASH)){
+                    newDb.put(MainActivity.auctionsJsonArr.getJSONObject(i));
+                }
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return newDb;
+    }
+
 }

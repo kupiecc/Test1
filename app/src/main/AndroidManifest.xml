@@ -17,7 +17,7 @@
             android:name=".AuctionView"
             android:label="Show details"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme.NoActionBar">
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -29,6 +29,13 @@
             android:label="Settings"
             android:theme="@style/AlertDialog.AppCompat">
 
+        </activity>
+
+        <activity android:name=".TrashView"
+            android:label="Trash"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                android:value="net.jackapp.auctionchecker.MainActivity" />
         </activity>
 
         <activity

@@ -42,6 +42,7 @@ public final class Constants {
     public static final String STATUS = "ListingStatus";
     public static final String TITLE = "Title";
     public static final String TIMESTAMP = "Timestamp";
+    public static final String TRASH = "Trash";
     public static final String UPDATED_AT = "UpdatedAt";
     public static final String URL_JSON = "UrlJson";
     public static final String VALUE = "Value";

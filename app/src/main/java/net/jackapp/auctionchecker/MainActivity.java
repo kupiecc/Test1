@@ -36,6 +36,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
     ListView drawerLv;
     LayoutInflater layoutInflater;
     String auctionMsg;
+    ProgressBar searchPb;
     RecyclerView listAuctionsLv;
     RelativeLayout infoLayout;
     String itemId, siteExtension, countriesDBString;
@@ -100,18 +102,24 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        System.out.println("onCreate MainWorker");
+//        System.out.println("onCreate MainWorker");
         setContentView(R.layout.activity_main);
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
         initViewObject();
+        initDrawer();
         loadCountriesCode();
         registerBroadcast();
+        background();
+        loadJsonToLv();
+        StaticWorker.showDBTitles();
+    }
 
-//        background();
-
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
         loadJsonToLv();
     }
 
@@ -132,9 +140,10 @@ public class MainActivity extends AppCompatActivity {
     public void loadJsonToLv() {
         try {
             MainActivity.auctionsJsonArr = jsonWorker.readFileToJsonArray(this, Constants.JSON_DB_NAME);
+//            System.out.println("MainActivity.auctionsJsonArr = " + MainActivity.auctionsJsonArr);
             auctionsList = new ArrayList<>();
             auctionsList.clear();
-            ArrayList<Auction> newAuctions = Auction.loadFromJsonArray();
+            ArrayList<Auction> newAuctions = Auction.loadFromJsonArray(false);
             Collections.sort(newAuctions, new Comparator<Auction>() {
                 @Override
                 public int compare(Auction lhs, Auction rhs) {
@@ -153,12 +162,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initViewObject() {
-        System.out.println("initViewObject");
+//        System.out.println("initViewObject");
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         assert toolbar != null;
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
-
 
         buyItNowTv = (TextView) findViewById(R.id.buy_it_now_found);
         titleTv = (TextView) findViewById(R.id.title_found);
@@ -168,13 +176,18 @@ public class MainActivity extends AppCompatActivity {
         infoLayout = (RelativeLayout) findViewById(R.id.info);
         saveBtnTv = (TextView) findViewById(R.id.save_auction_btn_tv);
         clearBtnTv = (TextView) findViewById(R.id.clear_view_btn_tv);
+        searchPb = (ProgressBar) findViewById(R.id.progress_bar_search);
+    }
+
+    private void initDrawer() {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerStringList = getResources().getStringArray(R.array.drawer_items);
         drawerLv = (ListView) findViewById(R.id.drawer_lv);
 
-        DrawerItem[] drawerItem = new DrawerItem[2];
+        DrawerItem[] drawerItem = new DrawerItem[3];
         drawerItem[0] = new DrawerItem(R.mipmap.ic_settings_white_24dp, "Settings");
         drawerItem[1] = new DrawerItem(R.mipmap.ic_content_paste_white_24dp, "Paste auction link");
+        drawerItem[2] = new DrawerItem(R.mipmap.ic_delete_white_24dp, "Trash");
 
         DrawerAdapter drawerAdapter = new DrawerAdapter(this, R.layout.drawer_list_item, drawerItem);
         drawerLv.setAdapter(drawerAdapter);
@@ -194,7 +207,6 @@ public class MainActivity extends AppCompatActivity {
                 getSupportActionBar().setTitle("on drawable opened");
             }
         };
-
     }
 
     @Override
@@ -256,19 +268,14 @@ public class MainActivity extends AppCompatActivity {
         Intent bgIntent = new Intent(this, BackgroundService.class);
         PendingIntent alarmIntent = PendingIntent.getService(this, 0, bgIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 2 * 60 * 1000, alarmIntent);
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(), 60 * 1000, alarmIntent);
         startService(bgIntent);
 
 
     }
 
-    public static void updateList() {
-
-    }
-
     private void loadCountriesCode() {
-        System.out.println("LoadCountriesCode");
-
+//        System.out.println("LoadCountriesCode");
         try {
             countriesDBString = fileWorker.readFile(this, "countriesCode.json", this.getAssets());
             countriesDBJson = new JSONObject(countriesDBString);
@@ -277,24 +284,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onPasteAuctionLink(View view) {
-
-        pasteAction();
-
-    }
-
-    public void clickFAB(View view) {
-
-        pasteAction();
-
-    }
-
     private void pasteAction() {
 
         FileCache fileCache = new FileCache(this);
         fileCache.clear();
+        picAuctionIv.setImageResource(R.drawable.no_img);
+        titleTv.setText("...");
+        priceTv.setText("");
+        buyItNowTv.setText("");
         saveBtnTv.setVisibility(View.INVISIBLE);
         clearBtnTv.setVisibility(View.INVISIBLE);
+        searchPb.setVisibility(View.VISIBLE);
         analyzeClipUrl();
 
     }
@@ -326,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
         JSONObject itemJson = new JSONObject();
 
         if (Auction.auctionExist(foundAuction.getItemId())) {
-            Toast.makeText(this, "This auction exist.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "This auction exist (also check trash)", Toast.LENGTH_LONG).show();
         } else {
             try {
                 Iterator it = jItemFromPaste.keys();
@@ -339,6 +339,7 @@ public class MainActivity extends AppCompatActivity {
                 itemJson.put("SiteExtension", foundAuction.getSiteExt());
                 itemJson.put("SiteID", foundAuction.getSiteId());
                 itemJson.put("UrlJson", foundAuction.getUrlJson());
+                itemJson.put("Trash", false);
                 itemJson.put(Constants.CREATE_AT, getNowDate());
 
                 JSONArray historyArr = new JSONArray();
@@ -459,6 +460,12 @@ public class MainActivity extends AppCompatActivity {
                     pasteAction();
                     drawerLayout.closeDrawers();
                     break;
+                case 2:
+                    System.out.println("Trash clicked");
+                    Intent trashIntent = new Intent(getApplicationContext(), TrashView.class);
+                    trashIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    getApplicationContext().startActivity(trashIntent);
+                    drawerLayout.closeDrawers();
                 default:
                     break;
             }
@@ -680,12 +687,13 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(aVoid);
 
             if (foundAuction.getTitle() != null) titleTv.setText(foundAuction.getTitle());
-            if (foundAuction.getCurrencyBuyItNow() != null)
-                buyItNowTv.setText(foundAuction.getCurrencyBuyItNow());
-            if (foundAuction.getCurrencyPrice() != null)
-                priceTv.setText(foundAuction.getCurrencyPrice());
+            if (foundAuction.getCurrencyBuyItNow() != null) buyItNowTv.setText(foundAuction.getCurrencyBuyItNow());
+            if (foundAuction.getCurrencyPrice() != null) priceTv.setText(foundAuction.getCurrencyPrice());
             if (foundAuction.getTitle() != null) saveBtnTv.setVisibility(View.VISIBLE);
+            if (foundAuction.getPicture().equals("")) searchPb.setVisibility(View.GONE);
+
             clearBtnTv.setVisibility(View.VISIBLE);
+
             System.out.println("Auction after paste = ");
             StaticWorker.showDBTitles();
         }
@@ -719,6 +727,7 @@ public class MainActivity extends AppCompatActivity {
                             new GetAuctionPic().execute(foundAuction.getPicture());
                         } else {
                             foundAuction.setPicture("");
+                            System.out.println("Pic not found");
                         }
                         break;
                     case Constants.TITLE:
@@ -751,6 +760,9 @@ public class MainActivity extends AppCompatActivity {
                     case Constants.COUNTRY:
                         foundAuction.setLocation(jItemFromPaste.get(Constants.COUNTRY).toString());
                         break;
+                    case Constants.TRASH:
+                        foundAuction.setTrash(jItemFromPaste.getBoolean(Constants.TRASH));
+                        break;
                 }
             }
         }
@@ -760,18 +772,12 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Bitmap doInBackground(String... params) {
-
             Bitmap pic = null;
-//            Log.d("jk", params[0]);
-
             try {
-
                 pic = BitmapFactory.decodeStream((InputStream) new URL(params[0]).getContent());
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             return pic;
         }
 
@@ -783,6 +789,7 @@ public class MainActivity extends AppCompatActivity {
                 picBmp = Bitmap.createBitmap(pic);
                 assert picAuctionIv != null;
                 picAuctionIv.setImageBitmap(picBmp);
+                searchPb.setVisibility(View.GONE);
             }
         }
     }

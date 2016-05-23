@@ -57,8 +57,8 @@ public class BackgroundService extends IntentService {
                     dbPrice = Double.parseDouble(dbPriceString);
                     ebayPrice = Double.parseDouble(ebayPriceString);
                     String title;
-                    if (jsonRow.getString(Constants.TITLE).length() > 10) {
-                        title = jsonRow.getString(Constants.TITLE).substring(0, 10);
+                    if (jsonRow.getString(Constants.TITLE).length() > 50) {
+                        title = jsonRow.getString(Constants.TITLE).substring(0, 50);
                     } else {
                         title = jsonRow.getString(Constants.TITLE);
                     }
